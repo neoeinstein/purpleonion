@@ -5,7 +5,7 @@ namespace Xpdm.PurpleOnion
 {
 	static class ConvertExtensions
 	{
-		private static readonly string base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+		private const string base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 		private static readonly byte[] boundaries = System.Text.ASCIIEncoding.Default.GetBytes("=27AZaz");
 		private const int PADDING_BOUND = 0;
 		private const int DIGIT_LOW_BOUND = 1;
@@ -77,7 +77,6 @@ namespace Xpdm.PurpleOnion
 			int hi = 0;
 			int currentChar = 0;
 			byte[] encBuf = ASCIIEncoding.Default.GetBytes(enc);
-			MemoryStream decBuf = new MemoryStream(enc.Length * 5 / 8 + 1);
 			
 			Norm normalize = delegate(byte b) {
 				if (b == boundaries[PADDING_BOUND])
@@ -98,31 +97,34 @@ namespace Xpdm.PurpleOnion
 				return INVALID_CHAR;
 			};
 			
-			while (currentChar < encBuf.Length)
+			using (MemoryStream decBuf = new MemoryStream(enc.Length * 5 / 8 + 1))
 			{
-				byte temp = normalize(encBuf[currentChar++]);
-				if (temp == INVALID_CHAR)
-					continue;
-				if (temp == PADDING_CHAR)
-					break;
-				buffer = (short) (buffer << 5 | temp);
-				hi += 5;
-				if (hi > 8)
+				while (currentChar < encBuf.Length)
 				{
-					byte o = (byte) (buffer >> (hi - 8));
-					decBuf.WriteByte(o);
-					buffer = (short) (buffer ^ o << (hi - 8));
-					hi -= 8;
+					byte temp = normalize(encBuf[currentChar++]);
+					if (temp == INVALID_CHAR)
+						continue;
+					if (temp == PADDING_CHAR)
+						break;
+					buffer = (short) (buffer << 5 | temp);
+					hi += 5;
+					if (hi > 8)
+					{
+						byte o = (byte) (buffer >> (hi - 8));
+						decBuf.WriteByte(o);
+						buffer = (short) (buffer ^ o << (hi - 8));
+						hi -= 8;
+					}
 				}
+
+				if (hi > 0)
+				{
+					buffer = (short) (buffer << (8 - hi));
+					decBuf.WriteByte((byte) buffer);
+				}
+
+				return decBuf.ToArray();
 			}
-			
-			if (hi > 0)
-			{
-				buffer = (short) (buffer << (8 - hi));
-				decBuf.WriteByte((byte) buffer);
-			}
-			
-			return decBuf.ToArray();
 		}
 	}
 }

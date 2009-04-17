@@ -8,8 +8,8 @@ namespace Xpdm.PurpleOnion
 {
 	static class RSAExtensions
 	{
-		private static readonly string BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
-		private static readonly string END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
+		private const string BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
+		private const string END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
 
 		public static RSA FromDecryptedOpenSslString(string keyin)
 		{
