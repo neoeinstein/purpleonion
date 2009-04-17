@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using Mono.Security;
@@ -18,14 +19,14 @@ namespace Xpdm.PurpleOnion
 				string onion = ConvertExtensions.FromBytesToBase32String(hash).Substring(0,16).ToLowerInvariant();
 				if (onion.Contains("tor") || onion.Contains("mirror"))
 				{
-					System.Console.WriteLine("Found: " + onion);
+					Console.WriteLine("Found: " + onion);
 					Directory.CreateDirectory(onion);
 					File.WriteAllText(Path.Combine(onion, "pki.xml"), pki.ToXmlString(true));
 					File.WriteAllText(Path.Combine(onion, "private_key"), System.Convert.ToBase64String(PKCS8.PrivateKeyInfo.Encode(pki)));
 					File.WriteAllText(Path.Combine(onion, "hostname"), onion + ".onion");
 				}
 
-				System.Console.WriteLine(onion + " " + ++count);
+				Console.WriteLine(onion + " " + ++count);
 			}
 		}
 	}
