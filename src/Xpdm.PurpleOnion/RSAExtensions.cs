@@ -1,11 +1,44 @@
+using System;
 using System.Security.Cryptography;
+using System.Text;
 using Mono.Security;
 using Mono.Security.Cryptography;
 
 namespace Xpdm.PurpleOnion
 {
-	class RSAExtensions
+	static class RSAExtensions
 	{
+		private static readonly string BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
+		private static readonly string END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
+
+		public static RSA FromDecryptedOpenSslString(string keyin)
+		{
+			keyin = keyin.Trim();
+			StringBuilder sb = new StringBuilder();
+			bool begin = false;
+			
+			foreach (string line in keyin.Split(new char[]{'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
+			{
+				if (!begin && line == BEGIN_RSA_PRIVATE_KEY)
+				{
+					begin = true;
+				}
+				else if (begin)
+				{
+					if (line == END_RSA_PRIVATE_KEY)
+					{
+						break;
+					}
+					sb.Append(line);
+				}
+			}
+			
+			byte[] key = Convert.FromBase64String(sb.ToString());
+			
+			RSA pki = PKCS8.PrivateKeyInfo.DecodeRSA(key);
+			return pki;
+		}
+
 		public static ASN1 ToAsn1(RSA rsa)
 		{
 			ASN1 asn = new ASN1(0x30);
