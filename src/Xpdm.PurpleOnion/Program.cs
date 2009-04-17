@@ -6,7 +6,7 @@ using Mono.Security.Cryptography;
 
 namespace Xpdm.PurpleOnion
 {
-	class Program
+	static class Program
 	{
 		private static void Main()
 		{
