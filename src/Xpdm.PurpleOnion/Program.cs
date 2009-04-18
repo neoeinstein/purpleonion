@@ -59,7 +59,7 @@ namespace Xpdm.PurpleOnion
 						if (log != null)
 						{
 							log.WriteLine(string.Format("{0},{1}", onion, pki.ToXmlString(true)));
-							if (count % 10 == 0) log.Flush();
+							log.Flush();
 						}
 
 						Console.Write(onion + " " + ++count + "\r");
