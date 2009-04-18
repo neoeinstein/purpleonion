@@ -8,8 +8,21 @@ namespace Xpdm.PurpleOnion
 {
 	static class Program
 	{
-		private static void Main()
+		private static int Main(string[] args)
 		{
+			Settings s = new Settings();
+
+			if(!s.TryParse(args))
+			{
+				return 1;
+			}
+
+			if (s.ShouldShowHelp)
+			{
+				s.ShowHelp(Console.Out);
+				return 0;
+			}
+
 			long count = 0;
 			while (true)
 			{

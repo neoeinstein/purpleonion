@@ -8,6 +8,7 @@ namespace Xpdm.PurpleOnion
 {
 	class Settings
 	{
+		public readonly string AppName = AppDomain.CurrentDomain.FriendlyName;
 		public Regex ToMatch { get; set; }
 		public string OutFilename { get; set; }
 		public string InFilename { get; set; }
@@ -25,7 +26,7 @@ namespace Xpdm.PurpleOnion
 					v => { if (v != null) ToMatch = new Regex(v, RegexOptions.Compiled); } },
 				{ "o|out=", "file to which generated pairs should be written, exclusive of -i",
 					v => { if (v != null) OutFilename = v; } },
-				{ "i|in=", "read in file from a previous run, exclusive of -o, requires -m",
+				{ "i|in=", "read in a file from a previous run, exclusive of -o, requires -m",
 					v => { if (v != null) InFilename = v; } },
 				{ "b|basedir=", "base working directory",
 					v => { if (v != null) BaseDir = v; } },
@@ -41,13 +42,13 @@ namespace Xpdm.PurpleOnion
 		{
 			try
 			{
+				ExtraArgs = options.Parse(args);
 			}
 			catch (OptionException e)
 			{
-				string appName = Environment.GetCommandLineArgs()[0];
-				Console.Error.Write(appName + ": ");
+				Console.Error.Write(AppName + ": ");
 				Console.Error.WriteLine(e.Message);
-				Console.Error.WriteLine("Try `" + appName + " --help' for more information.");
+				Console.Error.WriteLine("Try `" + AppName + " --help' for more information.");
 				return false;
 			}
 			return true;
@@ -55,8 +56,7 @@ namespace Xpdm.PurpleOnion
 		
 		public void ShowHelp(TextWriter o)
 		{
-			string appName = Environment.GetCommandLineArgs()[0];
-			o.WriteLine("Usage: " + appName + " [-v] [-b] [-i filename|-o filename] [-m regex]");
+			o.WriteLine("Usage: " + AppName + " [-v] [-b] [-i filename|-o filename] [-m regex]");
 			o.WriteLine("Brute-forces the creation of many RSA key-pairs attempting to find one whose");
 			o.WriteLine("Tor onion address matches a given pattern. For the creation of vanity");
 			o.WriteLine("onion addresses or burning through excess entropy.");
