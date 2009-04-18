@@ -1,0 +1,50 @@
+PurpleOnion
+===========
+
+For usage run (using Mono as the example):
+# mono PurpleCarrot.exe --help
+
+LICENSE
+-------
+PurpleOnion binaries and sources are licensed under a BSD-style license.
+For more information, see the LICENSE file.
+
+COMPILATION
+----------
+PurpleOnion requires at least Mono 2.2 to compile and run, but with the
+Mono.Options Options.cs code snippet placed in the 'src/' directory, will
+compile with Mono 2.0. The compiled binary may run on the .NET 2.0
+framework with the appropriate libraries available, but this has not been
+tested.
+
+ATTRIBUTION
+-----------
+Contributors to this project are self-identified by their commit history
+and by self-attribution in the AUTHORS file.
+
+This project uses transcluded code from the Mono.Options project, as part
+of the Mono project and in accordance with the Guidelines for Application
+Deployment [0] to permit simple access for reuse, as licensed under the
+MIT/X11 license:
+"""
+Copyright (C) 2008 Novell (http://www.novell.com)
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
