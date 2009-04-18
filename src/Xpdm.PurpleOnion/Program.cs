@@ -23,24 +23,54 @@ namespace Xpdm.PurpleOnion
 				return 0;
 			}
 
-			long count = 0;
-			while (true)
+			if (string.IsNullOrEmpty(s.BaseDir))
 			{
-				using (RSA pki = RSA.Create())
-				{
-					ASN1 asn = RSAExtensions.ToAsn1Key(pki);
-					byte[] hash = SHA1CryptoServiceProvider.Create().ComputeHash(asn.GetBytes());
-					string onion = ConvertExtensions.FromBytesToBase32String(hash).Substring(0,16).ToLowerInvariant();
-					if (onion.Contains("tor") || onion.Contains("mirror"))
-					{
-						Console.WriteLine("Found: " + onion);
-						Directory.CreateDirectory(onion);
-						File.WriteAllText(Path.Combine(onion, "pki.xml"), pki.ToXmlString(true));
-						File.WriteAllText(Path.Combine(onion, "private_key"), System.Convert.ToBase64String(PKCS8.PrivateKeyInfo.Encode(pki)));
-						File.WriteAllText(Path.Combine(onion, "hostname"), onion + ".onion");
-					}
+				s.BaseDir = ".";
+			}
 
-					Console.WriteLine(onion + " " + ++count);
+			TextWriter log = null;
+			try
+			{
+				if (!string.IsNullOrEmpty(s.OutFilename))
+				{
+					Directory.CreateDirectory(s.BaseDir);
+					log = File.AppendText(Path.Combine(s.BaseDir, s.OutFilename));
+				}
+
+				long count = 0;
+				while (true)
+				{
+					using (RSA pki = RSA.Create())
+					{
+						ASN1 asn = RSAExtensions.ToAsn1Key(pki);
+						byte[] hash = SHA1CryptoServiceProvider.Create().ComputeHash(asn.GetBytes());
+						string onion = ConvertExtensions.FromBytesToBase32String(hash).Substring(0,16).ToLowerInvariant();
+						if (s.ToMatch.IsMatch(onion))
+						{
+							Console.WriteLine("Found: " + onion);
+							Directory.CreateDirectory(s.BaseDir);
+							string onionDir = Path.Combine(s.BaseDir, onion);
+							Directory.CreateDirectory(onionDir);
+							File.WriteAllText(Path.Combine(onionDir, "pki.xml"), pki.ToXmlString(true));
+							File.WriteAllText(Path.Combine(onionDir, "private_key"), System.Convert.ToBase64String(PKCS8.PrivateKeyInfo.Encode(pki)));
+							File.WriteAllText(Path.Combine(onionDir, "hostname"), onion + ".onion");
+						}
+
+						if (log != null)
+						{
+							log.WriteLine(string.Format("{0},{1}", onion, pki.ToXmlString(true)));
+							if (count % 10 == 0) log.Flush();
+						}
+
+						Console.Write(onion + " " + ++count + "\r");
+					}
+				}
+			}
+			finally
+			{
+				if (log != null)
+				{
+					log.Dispose();
 				}
 			}
 		}
