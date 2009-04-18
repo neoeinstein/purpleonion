@@ -1,0 +1,27 @@
+# non-PurpleOnion code / Mono.Options
+
+R: Gendarme.Rules.Correctness.CheckParametersNullityInVisibleMethodsRule
+M: T Mono.Options.Option::Parse(System.String,Mono.Options.OptionContext)
+M: System.Boolean Mono.Options.OptionSet::Parse(System.String,Mono.Options.OptionContext)
+M: System.Collections.Generic.List`1<System.String> Mono.Options.OptionSet::Parse(System.Collections.Generic.IEnumerable`1<System.String>)
+R: Gendarme.Rules.Design.Generic.AvoidMethodWithUnusedGenericTypeRule
+M: T Mono.Options.Option::Parse(System.String,Mono.Options.OptionContext)
+R: Gendarme.Rules.Exceptions.DoNotSwallowErrorsCatchingNonSpecificExceptionsRule
+M: T Mono.Options.Option::Parse(System.String,Mono.Options.OptionContext)
+R: Gendarme.Rules.Exceptions.InstantiateArgumentExceptionCorrectlyRule
+M: System.Void Mono.Options.Option::AddSeparators(System.String,System.Int32,System.Collections.Generic.ICollection`1<System.String>)
+M: System.String Mono.Options.OptionSet::GetKeyForItem(Mono.Options.Option)
+R: Gendarme.Rules.Maintainability.AvoidLackOfCohesionOfMethodsRule
+T: Mono.Options.OptionContext
+R: Gendarme.Rules.Naming.UseCorrectSuffixRule
+T: Mono.Options.OptionSet
+R: Gendarme.Rules.Performance.AvoidReturningArraysOnPropertiesRule
+M: System.String[] Mono.Options.Option::get_Names()
+M: System.String[] Mono.Options.Option::get_ValueSeparators()
+R: Gendarme.Rules.Performance.PreferCharOverloadRule
+M: System.String Mono.Options.OptionSet::GetArgumentName(System.Int32,System.Int32,System.String)
+R: Gendarme.Rules.Smells.AvoidCodeDuplicatedInSameClassRule
+T: Mono.Options.OptionSet
+R: Gendarme.Rules.Smells.AvoidLongMethodsRule
+M: System.Boolean Mono.Options.OptionSet::WriteOptionPrototype(System.IO.TextWriter,Mono.Options.Option,System.Int32&)
+

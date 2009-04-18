@@ -6,7 +6,7 @@ using Mono.Options;
 
 namespace Xpdm.PurpleOnion
 {
-	class Settings
+	sealed class Settings
 	{
 		public readonly string AppName = AppDomain.CurrentDomain.FriendlyName;
 		public Regex ToMatch { get; set; }
