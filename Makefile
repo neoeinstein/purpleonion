@@ -1,15 +1,25 @@
-BUILD = bin/
-SOURCES = $(wildcard src/Xpdm.PurpleOnion/*.cs)
+BINDIR = bin
+SRCDIR = src
+SOURCES = $(wildcard $(SRCDIR)/Xpdm.PurpleOnion/*.cs)
 EXE = PurpleOnion.exe
 RULESET = self-test
 RULEIGNORE = rules.ignore
+MONO_OPTIONS = $(SRCDIR)/Options.cs
 
-$(EXE): $(SOURCES)
-	mkdir -p $(BUILD)
-	gmcs -t:exe -out:$(BUILD)$@ -r:Mono.Security $(SOURCES)
+$(BINDIR)/$(EXE): $(MONO_OPTIONS) $(SOURCES) $(BINDIR)
+	gmcs -t:exe -out:$@ -r:Mono.Security $(MONO_OPTIONS) $(SOURCES)
+
+$(BINDIR):
+	mkdir -p $(BINDIR)
+
+$(MONO_OPTIONS):
+	cp `pkg-config --variable=Sources mono-options` $(SRCDIR)
 
 gendarme:
-	gendarme --set $(RULESET) --ignore $(RULEIGNORE) $(BUILD)$(EXE)
+	gendarme --set $(RULESET) --ignore $(RULEIGNORE) $(BINDIR)/$(EXE)
 
 clean:
-	rm -f $(BUILD)*
+	rm -f $(BINDIR)/*
+
+distclean: clean
+	rm -f $(MONO_OPTIONS)
