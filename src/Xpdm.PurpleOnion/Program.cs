@@ -40,25 +40,20 @@ namespace Xpdm.PurpleOnion
 				long count = 0;
 				while (true)
 				{
-					using (RSA pki = RSA.Create())
+					using (OnionAddress onion = OnionAddress.Create())
 					{
-						ASN1 asn = RSAExtensions.ToAsn1Key(pki);
-						byte[] hash = SHA1CryptoServiceProvider.Create().ComputeHash(asn.GetBytes());
-						string onion = ConvertExtensions.FromBytesToBase32String(hash).Substring(0,16).ToLowerInvariant();
-						if (s.ToMatch.IsMatch(onion))
+						if (s.ToMatch.IsMatch(onion.Onion))
 						{
-							Console.WriteLine("Found: " + onion);
-							Directory.CreateDirectory(s.BaseDir);
-							string onionDir = Path.Combine(s.BaseDir, onion);
+							Console.WriteLine("Found: " + onion.Onion);
+							string onionDir = Path.Combine(s.BaseDir, onion.Onion);
 							Directory.CreateDirectory(onionDir);
-							File.WriteAllText(Path.Combine(onionDir, "pki.xml"), pki.ToXmlString(true));
-							File.WriteAllText(Path.Combine(onionDir, "private_key"), System.Convert.ToBase64String(PKCS8.PrivateKeyInfo.Encode(pki)));
-							File.WriteAllText(Path.Combine(onionDir, "hostname"), onion + ".onion");
+							onion.WriteToOnionFiles(onionDir);
+							File.WriteAllText(Path.Combine(onionDir, "pki.xml"), onion.ToXmlString(true));
 						}
 
 						if (log != null)
 						{
-							log.WriteLine(string.Format("{0},{1}", onion, pki.ToXmlString(true)));
+							log.WriteLine(string.Format("{0},{1}", onion, onion.ToXmlString(true)));
 							log.Flush();
 						}
 
