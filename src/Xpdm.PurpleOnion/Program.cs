@@ -4,14 +4,18 @@ using System.Security.Cryptography;
 using System.Threading;
 using Mono.Security;
 using Mono.Security.Cryptography;
+#if POSIX
 using Mono.Unix;
 using Mono.Unix.Native;
+#endif
 
 namespace Xpdm.PurpleOnion
 {
 	static class Program
 	{
+#if POSIX
 		private static bool receivedShutdownSignal;
+#endif
 		private static Settings settings = new Settings();
 		private static TextWriter log;
 		private static ulong count = 0;
@@ -50,10 +54,12 @@ namespace Xpdm.PurpleOnion
 					generators[i].StartGenerating();
 				}
 
+#if POSIX
+				UnixSignal term = new UnixSignal(Signum.SIGTERM);
 				UnixSignal ctlc = new UnixSignal(Signum.SIGINT);
 				UnixSignal hup = new UnixSignal(Signum.SIGHUP);
 
-				UnixSignal.WaitAny(new UnixSignal[] { ctlc, hup });
+				UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
 
 				receivedShutdownSignal = true;
 				
@@ -74,7 +80,9 @@ namespace Xpdm.PurpleOnion
 
 				Console.WriteLine("");
 				Console.WriteLine("Closed cleanly");
-
+#else
+				Thread.Sleep(int.MaxValue);
+#endif
 				return 0;
 			}
 			finally
@@ -88,11 +96,12 @@ namespace Xpdm.PurpleOnion
 
 		private static void ProcessGeneratedOnion(object sender, OnionGenerator.OnionGeneratedEventArgs e)
 		{
+#if POSIX
 			if (receivedShutdownSignal)
 			{
 				e.Cancel = true;
 			}
-			
+#endif
 			using (OnionAddress onion = e.Result)
 			{
 				if (settings.ToMatch.IsMatch(onion.Onion))
