@@ -18,13 +18,13 @@ namespace Xpdm.PurpleOnion
 			{
 				if (onion == null)
 				{
-					ASN1 asn = RSAExtensions.ToAsn1Key(key);
+					ASN1 asn = key.ToAsn1Key();
 					byte[] hash;
 					using (SHA1 hasher = SHA1.Create())
 					{
 						hash = hasher.ComputeHash(asn.GetBytes());
 					}
-					onion = ConvertExtensions.FromBytesToBase32String(hash).Substring(0,16).ToLowerInvariant();
+					onion = Base32Convert.ToString(hash).Substring(0,16).ToLowerInvariant();
 				}
 				return onion;
 			}

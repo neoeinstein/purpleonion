@@ -39,7 +39,7 @@ namespace Xpdm.PurpleOnion
 			return pki;
 		}
 
-		public static ASN1 ToAsn1(RSA rsa)
+		public static ASN1 ToAsn1(this RSA rsa)
 		{
 			ASN1 asn = new ASN1(0x30);
 			ASN1 asnOid = new ASN1(0x30);
@@ -62,7 +62,7 @@ namespace Xpdm.PurpleOnion
 			return asn;
 		}
 
-		public static ASN1 ToAsn1Key(RSA rsa)
+		public static ASN1 ToAsn1Key(this RSA rsa)
 		{
 			RSAParameters parameters = rsa.ExportParameters(false);
 			

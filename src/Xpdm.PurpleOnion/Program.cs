@@ -53,11 +53,11 @@ namespace Xpdm.PurpleOnion
 
 						if (log != null)
 						{
-							log.WriteLine(string.Format("{0},{1}", onion, onion.ToXmlString(true)));
+							log.WriteLine(string.Format("{0},{1}", onion.Onion, onion.ToXmlString(true)));
 							log.Flush();
 						}
 
-						Console.Write(onion + " " + ++count + "\r");
+						Console.Write(onion.Onion + " " + ++count + "\r");
 					}
 				}
 			}

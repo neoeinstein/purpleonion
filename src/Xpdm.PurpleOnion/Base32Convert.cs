@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Xpdm.PurpleOnion
 {
-	static class ConvertExtensions
+	static class Base32Convert
 	{
 		private const string base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 		private static readonly byte[] boundaries = System.Text.ASCIIEncoding.Default.GetBytes("=27AZaz");
@@ -21,7 +21,7 @@ namespace Xpdm.PurpleOnion
 		private delegate void Action();
 		private delegate byte Norm(byte b);
 
-		public static string FromBytesToBase32String(byte[] plain)
+		public static string ToString(byte[] plain)
 		{
 			short buffer = 0;
 			int hi = 0;
@@ -71,7 +71,7 @@ namespace Xpdm.PurpleOnion
 			return sb.ToString();
 		}
 		
-		public static byte[] FromBase32StringToBytes(string enc)
+		public static byte[] ToBytes(string enc)
 		{
 			short buffer = 0;
 			int hi = 0;
