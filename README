@@ -10,12 +10,27 @@ PurpleOnion binaries and sources are licensed under a BSD-style license.
 For more information, see the LICENSE file.
 
 COMPILATION
-----------
+-----------
 PurpleOnion requires at least Mono 2.2 to compile and run, but with the
 Mono.Options Options.cs code snippet placed in the 'src/' directory, will
 compile with Mono 2.0. The compiled binary may run on the .NET 2.0
 framework with the appropriate libraries available, but this has not been
 tested.
+
+If the application will be run on a POSIX machine, support for receiving
+certain terminating signals and exiting cleanly can be enabled by adding
+`POSIX=YesPlease' to the make command:
+
+make POSIX=YesPlease
+
+EXECUTION
+---------
+When POSIX signal handling is enabled, background threads will be allowed 
+to complete their queued up work before terminating. Currently, SIGHUP,
+SIGTERM, and SIGINT are processed as requests to exit. Since all
+background threads are allowed to exit cleanly, a high numbers of workers
+(greater than 2*num_procs) may cause the program to continue running for a
+few seconds while the remaining worker threads finish processing.
 
 ATTRIBUTION
 -----------
