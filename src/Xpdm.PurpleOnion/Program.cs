@@ -96,12 +96,19 @@ namespace Xpdm.PurpleOnion
 
 					Console.WriteLine(" " + onion.Onion);
 					
-					if (settings.ToMatch.IsMatch(onion.Onion))
-					{
-						WriteOnionDirectory(onion);
-					}
+					WriteOnionDirectoryIfMatched(onion);
 				}
 			}
+		}
+
+		private static void WriteOnionDirectoryIfMatched(OnionAddress onion)
+		{
+			if (settings.ToMatch != null && settings.ToMatch.IsMatch(onion.Onion))
+			{
+				Console.WriteLine("Found: " + onion.Onion);
+				WriteOnionDirectory(onion);
+			}
+
 		}
 
 		private static void WriteOnionDirectory(OnionAddress onion)
@@ -185,12 +192,6 @@ namespace Xpdm.PurpleOnion
 
 			using (OnionAddress onion = e.Result)
 			{
-				if (settings.ToMatch.IsMatch(onion.Onion))
-				{
-					Console.WriteLine("Found: " + onion.Onion);
-					WriteOnionDirectory(onion);
-				}
-
 				if (log != null)
 				{
 					log.WriteLine(string.Format("{0}{1}{2}", onion.Onion, LOG_FIELD_SEPARATOR, onion.ToXmlString(true)));

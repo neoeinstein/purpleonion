@@ -35,7 +35,8 @@ namespace Xpdm.PurpleOnion
 				return;
 			}
 
-			e.Result = OnionAddress.Create();
+			OnionAddress onion = OnionAddress.Create();
+			e.Result = onion;
 
 			if (worker.CancellationPending)
 			{
