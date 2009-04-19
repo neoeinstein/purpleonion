@@ -5,9 +5,15 @@ EXE = PurpleOnion.exe
 RULESET = self-test
 RULEIGNORE = rules.ignore
 MONO_OPTIONS = $(SRCDIR)/Options.cs
+REFERENCES = Mono.Security
+UNIXHOST = YesPlease
+
+ifneq ($(UNIXHOST),)
+	REFERENCES += Mono.Posix
+endif
 
 $(BINDIR)/$(EXE): $(MONO_OPTIONS) $(SOURCES) $(BINDIR)
-	gmcs -t:exe -out:$@ -r:Mono.Security $(MONO_OPTIONS) $(SOURCES)
+	gmcs -t:exe -out:$@ $(addprefix -r:,$(REFERENCES)) $(MONO_OPTIONS) $(SOURCES)
 
 $(BINDIR):
 	mkdir -p $(BINDIR)

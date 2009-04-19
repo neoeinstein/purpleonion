@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 using System.Threading;
 using Mono.Security;
 using Mono.Security.Cryptography;
+using Mono.Unix;
+using Mono.Unix.Native;
 
 namespace Xpdm.PurpleOnion
 {
@@ -47,16 +49,13 @@ namespace Xpdm.PurpleOnion
 					generators[i].OnionGenerated += ProcessGeneratedOnion;
 					generators[i].StartGenerating();
 				}
-				
-				while (true)
-				{
-					Thread.Sleep(1000);
-					
-					if (receivedShutdownSignal)
-					{
-						break;
-					}
-				}
+
+				UnixSignal ctlc = new UnixSignal(Signum.SIGINT);
+				UnixSignal hup = new UnixSignal(Signum.SIGHUP);
+
+				UnixSignal.WaitAny(new UnixSignal[] { ctlc, hup });
+
+				receivedShutdownSignal = true;
 				
 				bool ready = false;
 				while (!ready)
@@ -69,7 +68,12 @@ namespace Xpdm.PurpleOnion
 							ready = false;
 						}
 					}
+
+					Thread.Sleep(0);
 				}
+
+				Console.WriteLine("");
+				Console.WriteLine("Closed cleanly");
 
 				return 0;
 			}
