@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Mono.Security;
@@ -10,15 +11,20 @@ namespace Xpdm.PurpleOnion
 	{
 		private const string BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
 		private const string END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
+		private const int DEFAULT_OPENSSL_LINE_LEN = 64;
 
-		public static RSA FromDecryptedOpenSslString(string keyin)
+		public static RSA FromOpenSslFile(string file)
 		{
-			keyin = keyin.Trim();
 			StringBuilder sb = new StringBuilder();
 			bool begin = false;
 			
-			foreach (string line in keyin.Split(new char[]{'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string line in File.ReadAllLines(file))
 			{
+				if (string.IsNullOrEmpty(line))
+				{
+					continue;
+				}
+
 				if (!begin && line == BEGIN_RSA_PRIVATE_KEY)
 				{
 					begin = true;
@@ -32,11 +38,50 @@ namespace Xpdm.PurpleOnion
 					sb.Append(line);
 				}
 			}
-			
-			byte[] key = Convert.FromBase64String(sb.ToString());
-			
-			RSA pki = PKCS8.PrivateKeyInfo.DecodeRSA(key);
+
+			return FromOpenSslString(sb.ToString());
+		}
+
+		public static RSA FromOpenSslString(string key)
+		{
+			byte[] keyBytes = Convert.FromBase64String(key);
+			if (PKCS8.GetType(keyBytes) != PKCS8.KeyInfo.PrivateKey)
+			{
+				throw new NotSupportedException("Only unencrypted private keys are supported");
+			}
+			RSA pki = PKCS8.PrivateKeyInfo.DecodeRSA(keyBytes);
 			return pki;
+		}
+
+		public static void ToOpenSslFile(this RSA rsa, string filename)
+		{
+			string keyString = rsa.ToOpenSslString();
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine(BEGIN_RSA_PRIVATE_KEY);
+
+			int curPos;
+			for (curPos = 0; 
+			     curPos + DEFAULT_OPENSSL_LINE_LEN <= keyString.Length;
+			     curPos += DEFAULT_OPENSSL_LINE_LEN)
+			{
+				sb.AppendLine(keyString.Substring(curPos, DEFAULT_OPENSSL_LINE_LEN));
+			}
+
+			if (curPos < keyString.Length)
+			{
+				sb.AppendLine(keyString.Substring(curPos));
+			}
+
+			sb.AppendLine(END_RSA_PRIVATE_KEY);
+
+			File.WriteAllText(filename, sb.ToString());
+		}
+
+		public static string ToOpenSslString(this RSA rsa)
+		{
+			byte[] keyBytes = PKCS8.PrivateKeyInfo.Encode(rsa);
+			return Convert.ToBase64String(keyBytes);
 		}
 
 		public static ASN1 ToAsn1(this RSA rsa)

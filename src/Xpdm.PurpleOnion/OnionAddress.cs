@@ -8,7 +8,10 @@ namespace Xpdm.PurpleOnion
 {
 	sealed class OnionAddress : IDisposable
 	{
-		private const string DOT_ONION = ".onion";
+		public static readonly string KeyFilename = "private_key";
+		public static readonly string HostFilename = "hostname";
+		public static readonly string Extension = ".onion";
+
 		private readonly RSA key;
 		
 		private string onion = null;
@@ -52,27 +55,47 @@ namespace Xpdm.PurpleOnion
 		
 		public static OnionAddress FromXmlString(string xml)
 		{
-			RSA pki = RSA.Create();
+			RSA pki = new RSACryptoServiceProvider();
 			pki.FromXmlString(xml);
 			OnionAddress retVal = new OnionAddress(pki);
 			return retVal;
 		}
+
+//		public void FromXmlString(string xml)
+//		{
+//			RSA pki = new RSACryptoServiceProvider();
+//			pki.FromXmlString(xml);
+//			key.Clear();
+//			key = pki;
+//		}
 		
 		public string ToXmlString(bool includePrivate)
 		{
 			return key.ToXmlString(includePrivate);
 		}
+
+		public static OnionAddress FromOpenSslString(string ssl)
+		{
+			RSA pki = RSAExtensions.FromOpenSslString(ssl);
+			return new OnionAddress(pki);
+		}
 		
+//		public void FromOpenSslString(string ssl)
+//		{
+//			RSA pki = RSAExtensions.FromOpenSslString(ssl);
+//			key.Clear();
+//			key = pki;
+//		}
+
+		public string ToOpenSslString()
+		{
+			return key.ToOpenSslString();
+		}
+
 		public static OnionAddress ReadFromOnionFile(string file)
 		{
 			string openSslString = File.ReadAllText(file);
-			byte[] openSslKey = Convert.FromBase64String(openSslString);
-			if (PKCS8.GetType(openSslKey) != PKCS8.KeyInfo.PrivateKey)
-			{
-				throw new NotSupportedException("Only unencrypted private keys are supported");
-			}
-			RSA pki = PKCS8.PrivateKeyInfo.DecodeRSA(openSslKey);
-			return new OnionAddress(pki);
+			return FromOpenSslString(openSslString);
 		}
 		
 		public void WriteToOnionFiles(string dir)
@@ -81,9 +104,8 @@ namespace Xpdm.PurpleOnion
 			{
 				throw new NotSupportedException("Cannot create an onion from a public-only key");
 			}
-			File.WriteAllText(Path.Combine(dir, "private_key"),
-			                  Convert.ToBase64String(PKCS8.PrivateKeyInfo.Encode(key)));
-			File.WriteAllText(Path.Combine(dir, "hostname"), Onion + DOT_ONION);
+			key.ToOpenSslFile(Path.Combine(dir, KeyFilename));
+			File.WriteAllText(Path.Combine(dir, HostFilename), Onion + Extension + "\n");
 		}
 		
 		bool disposed = false;
@@ -102,9 +124,10 @@ namespace Xpdm.PurpleOnion
 			}
 			if (disposing)
 			{
-				if (key != null)
+				IDisposable disKey = key as IDisposable;
+				if (disKey != null)
 				{
-					((IDisposable)key).Dispose();
+					disKey.Dispose();
 				}
 			}
 			disposed = true;

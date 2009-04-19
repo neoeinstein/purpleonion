@@ -6,7 +6,7 @@ namespace Xpdm.PurpleOnion
 	class OnionGenerator
 	{
 		private readonly BackgroundWorker worker = new BackgroundWorker();
-		public bool Stopped { get; protected set; }
+		public bool Running { get; protected set; }
 		
 		public OnionGenerator()
 		{
@@ -16,19 +16,41 @@ namespace Xpdm.PurpleOnion
 		
 		public event EventHandler<OnionGeneratedEventArgs> OnionGenerated;
 		
-		public void StartGenerating()
+		public void Start()
 		{
-			Stopped = false;
+			Running = true;
 			worker.RunWorkerAsync();
+		}
+
+		public void Stop()
+		{
+			worker.CancelAsync();
 		}
 		
 		protected virtual void GenerateOnion(object sender, DoWorkEventArgs e)
 		{
+			if (worker.CancellationPending)
+			{
+				e.Cancel = true;
+				return;
+			}
+
 			e.Result = OnionAddress.Create();
+
+			if (worker.CancellationPending)
+			{
+				e.Cancel = true;
+			}
 		}
-		
+
 		protected virtual void RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
+			if (e.Cancelled)
+			{
+				Running = false;
+				return;
+			}
+
 			OnionGeneratedEventArgs args = new OnionGeneratedEventArgs {
 				Result = (OnionAddress) e.Result,
 			};
@@ -41,7 +63,7 @@ namespace Xpdm.PurpleOnion
 			}
 			else
 			{
-				Stopped = true;
+				Running = false;
 			}
 		}
 		
