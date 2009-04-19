@@ -32,6 +32,9 @@ background threads are allowed to exit cleanly, a high numbers of workers
 (greater than 2*num_procs) may cause the program to continue running for a
 few seconds while the remaining worker threads finish processing.
 
+Receiving a SIGKILL signal will immediately cause execution to cease;
+this signal cannot be caught or handled.
+
 ATTRIBUTION
 -----------
 Contributors to this project are self-identified by their commit history
