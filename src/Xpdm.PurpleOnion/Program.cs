@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading;
 using Mono.Security;
 using Mono.Security.Cryptography;
 
@@ -8,58 +9,69 @@ namespace Xpdm.PurpleOnion
 {
 	static class Program
 	{
+		private static bool receivedShutdownSignal;
+		private static Settings settings = new Settings();
+		private static TextWriter log;
+		private static ulong count = 0;
+		
 		private static int Main(string[] args)
 		{
-			Settings s = new Settings();
-
-			if(!s.TryParse(args))
+			if(!settings.TryParse(args))
 			{
 				return 1;
 			}
 
-			if (s.ShouldShowHelp)
+			if (settings.ShouldShowHelp)
 			{
-				s.ShowHelp(Console.Out);
+				settings.ShowHelp(Console.Out);
 				return 0;
 			}
 
-			if (string.IsNullOrEmpty(s.BaseDir))
+			if (string.IsNullOrEmpty(settings.BaseDir))
 			{
-				s.BaseDir = ".";
+				settings.BaseDir = ".";
 			}
 
-			TextWriter log = null;
 			try
 			{
-				if (!string.IsNullOrEmpty(s.OutFilename))
+				if (!string.IsNullOrEmpty(settings.OutFilename))
 				{
-					Directory.CreateDirectory(s.BaseDir);
-					log = File.AppendText(Path.Combine(s.BaseDir, s.OutFilename));
+					Directory.CreateDirectory(settings.BaseDir);
+					log = File.AppendText(Path.Combine(settings.BaseDir, settings.OutFilename));
 				}
-
-				long count = 0;
+				
+				OnionGenerator[] generators = new OnionGenerator[settings.WorkerCount];
+				for (int i = 0; i < generators.Length; ++i)
+				{
+					generators[i] = new OnionGenerator();
+					generators[i].OnionGenerated += ProcessGeneratedOnion;
+					generators[i].StartGenerating();
+				}
+				
 				while (true)
 				{
-					using (OnionAddress onion = OnionAddress.Create())
+					Thread.Sleep(1000);
+					
+					if (receivedShutdownSignal)
 					{
-						if (s.ToMatch.IsMatch(onion.Onion))
-						{
-							Console.WriteLine("Found: " + onion.Onion);
-							string onionDir = Path.Combine(s.BaseDir, onion.Onion);
-							Directory.CreateDirectory(onionDir);
-							onion.WriteToOnionFiles(onionDir);
-							File.WriteAllText(Path.Combine(onionDir, "pki.xml"), onion.ToXmlString(true));
-						}
-
-						if (log != null)
-						{
-							log.WriteLine(string.Format("{0},{1}", onion.Onion, onion.ToXmlString(true)));
-							log.Flush();
-						}
-
-						Console.Write(onion.Onion + " " + ++count + "\r");
+						break;
 					}
 				}
+				
+				bool ready = false;
+				while (!ready)
+				{
+					ready = true;
+					foreach (OnionGenerator o in generators)
+					{
+						if (!o.Stopped)
+						{
+							ready = false;
+						}
+					}
+				}
+
+				return 0;
 			}
 			finally
 			{
@@ -67,6 +79,34 @@ namespace Xpdm.PurpleOnion
 				{
 					log.Dispose();
 				}
+			}
+		}
+
+		private static void ProcessGeneratedOnion(object sender, OnionGenerator.OnionGeneratedEventArgs e)
+		{
+			if (receivedShutdownSignal)
+			{
+				e.Cancel = true;
+			}
+			
+			using (OnionAddress onion = e.Result)
+			{
+				if (settings.ToMatch.IsMatch(onion.Onion))
+				{
+					Console.WriteLine("Found: " + onion.Onion);
+					string onionDir = Path.Combine(settings.BaseDir, onion.Onion);
+					Directory.CreateDirectory(onionDir);
+					onion.WriteToOnionFiles(onionDir);
+					File.WriteAllText(Path.Combine(onionDir, "pki.xml"), onion.ToXmlString(true));
+				}
+
+				if (log != null)
+				{
+					log.WriteLine(string.Format("{0},{1}", onion.Onion, onion.ToXmlString(true)));
+					log.Flush();
+				}
+
+				Console.Write(onion.Onion + " " + ++count + "\r");
 			}
 		}
 	}

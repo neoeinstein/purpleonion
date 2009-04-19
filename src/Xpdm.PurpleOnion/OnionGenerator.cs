@@ -6,6 +6,7 @@ namespace Xpdm.PurpleOnion
 	class OnionGenerator
 	{
 		private readonly BackgroundWorker worker = new BackgroundWorker();
+		public bool Stopped { get; protected set; }
 		
 		public OnionGenerator()
 		{
@@ -17,6 +18,7 @@ namespace Xpdm.PurpleOnion
 		
 		public void StartGenerating()
 		{
+			Stopped = false;
 			worker.RunWorkerAsync();
 		}
 		
@@ -37,7 +39,10 @@ namespace Xpdm.PurpleOnion
 			{
 				worker.RunWorkerAsync();
 			}
-			
+			else
+			{
+				Stopped = true;
+			}
 		}
 		
 		protected virtual void OnOnionGenerated(OnionGeneratedEventArgs e)
