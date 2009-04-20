@@ -24,17 +24,17 @@ namespace Xpdm.PurpleOnion
 		public Settings()
 		{
 			options = new OptionSet() {
-				{ "m|match=", "create onion directories for matches",
+				{ "m|match=", "create hidden service directories for onion addresses found matching {REGEX}",
 					v => { if (v != null) ToMatch = new Regex(v, RegexOptions.Compiled); } },
-				{ "o|out=", "file to which generated pairs should be written\nexclusive of -i,-c",
+				{ "o|out=", "append generated keys to {FILE}\nexclusive of -i,-c",
 					v => { if (v != null) OutFilename = v; } },
-				{ "i|in=", "read in a file from a previous run\nexclusive of -o,-c, requires -m",
+				{ "i|in=", "find matching addresses from a previous run that was saved to {FILE}\nexclusive of -o,-c, requires -m",
 					v => { if (v != null) InFilename = v; } },
-				{ "c|check=", "verify the contents of an onion directory\nexclusive of -i,-o",
+				{ "c|check=", "verify that {DIR} is a valid onion directory whose hostname matches its private_key\nexclusive of -i,-o",
 					v => { if (v != null) CheckDir = v; } },
-				{ "b|basedir=", "base working directory",
+				{ "b|basedir=", "use {DIR} as the base working directory",
 					v => { if (v != null) BaseDir = v; } },
-				{ "n|num=", "number of child workers to spawn\n(default: 2*num_proc)",
+				{ "w|workers=", "spawn {NUM} worker threads to generate keys\ndefault 2*num_proc, ignored if -i",
 					(int v) => WorkerCount = v },
 				{ "v", "increase output verbosity",
 					v => { if (v != null) ++Verbosity; } },
@@ -63,7 +63,7 @@ namespace Xpdm.PurpleOnion
 		
 		public void ShowHelp(TextWriter o)
 		{
-			o.WriteLine("Usage: " + AppName + " [-v] [-b] [[[-i|-o] filename] [-m regex] [-n number]|-c dir]");
+			o.WriteLine("Usage: " + AppName + " [-v] [-b] [[[-i|-o] filename] [-m regex] [-w number]|-c dir]");
 			o.WriteLine("Brute-forces the creation of many RSA key-pairs attempting to find one whose");
 			o.WriteLine("Tor onion address matches a given pattern. For the creation of vanity");
 			o.WriteLine("onion addresses or burning through excess entropy.");
