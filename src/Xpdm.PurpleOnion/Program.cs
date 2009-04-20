@@ -100,11 +100,21 @@ namespace Xpdm.PurpleOnion
 					}
 					
 					string[] record = line.Split(LOG_FIELD_SEPARATOR);
-					string pkiXml = record[1];
-					
-					onion = OnionAddress.FromXmlString(pkiXml);
 
-					WriteOnionDirectoryIfMatched(onion);
+					if (record.Length != 2)
+					{
+						continue;
+					}
+
+					string logOnion = record[0];
+					if (settings.ToMatch != null && settings.ToMatch.IsMatch(logOnion))
+					{
+						string pkiXml = record[1];
+					
+						onion = OnionAddress.FromXmlString(pkiXml);
+
+						WriteOnionDirectoryIfMatched(onion);
+					}
 				}
 			}
 		}
