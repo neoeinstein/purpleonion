@@ -57,6 +57,7 @@ namespace Xpdm.PurpleOnion
 			{
 				using(log = OpenLog())
 				{
+					AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
 					GenerateOnions();
 					WaitForSignal();
 				}
@@ -200,6 +201,14 @@ namespace Xpdm.PurpleOnion
 
 			UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
 
+			UnhandledExceptionHandler(null, null);
+#else
+			Thread.Sleep(int.MaxValue);
+#endif
+		}
+
+		private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+		{
 			receivedShutdownSignal = true;
 
 			foreach (OnionGenerator o in generators)
@@ -224,9 +233,6 @@ namespace Xpdm.PurpleOnion
 
 			Console.WriteLine("");
 			Console.WriteLine("Closed cleanly");
-#else
-			Thread.Sleep(int.MaxValue);
-#endif
 		}
 
 		private static void ProcessGeneratedOnion(object sender, OnionGenerator.OnionGeneratedEventArgs e)
