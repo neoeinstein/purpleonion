@@ -12,6 +12,7 @@ namespace Xpdm.PurpleOnion
 		public Regex ToMatch { get; set; }
 		public string OutFilename { get; set; }
 		public string InFilename { get; set; }
+		public string CheckDir { get; set; }
 		public string BaseDir { get; set; }
 		public int WorkerCount { get; set; }
 		public List<string> ExtraArgs { get; set; }
@@ -29,6 +30,8 @@ namespace Xpdm.PurpleOnion
 					v => { if (v != null) OutFilename = v; } },
 				{ "i|in=", "read in a file from a previous run\nexclusive of -o, requires -m",
 					v => { if (v != null) InFilename = v; } },
+				{ "c|check=", "an onion directory to verify",
+					v => { if (v != null) CheckDir = v; } },
 				{ "b|basedir=", "base working directory",
 					v => { if (v != null) BaseDir = v; } },
 				{ "n|num=", "number of child workers to spawn\n(default: 2*num_proc)",

@@ -39,7 +39,17 @@ namespace Xpdm.PurpleOnion
 				settings.BaseDir = ".";
 			}
 
-			if (!string.IsNullOrEmpty(settings.InFilename))
+			if (!string.IsNullOrEmpty(settings.CheckDir))
+			{
+				if (!IsOnionDirectoryValid(settings.CheckDir))
+				{
+					return 1;
+				}
+				else
+				{
+				}
+			}
+			else if (!string.IsNullOrEmpty(settings.InFilename))
 			{
 				AttemptToMatchLog();
 			}
@@ -95,6 +105,46 @@ namespace Xpdm.PurpleOnion
 
 					WriteOnionDirectoryIfMatched(onion);
 				}
+			}
+		}
+
+		private static bool IsOnionDirectoryValid(string dir)
+		{
+			if (!Directory.Exists(dir))
+			{
+				Console.Error.WriteLine("Onion directory '" + dir + "' does not exist.");
+				return false;
+			}
+
+			string onionKeyFile = Path.Combine(dir, OnionAddress.KeyFilename);
+			string onionHostFile = Path.Combine(dir, OnionAddress.HostFilename);
+
+			if (!File.Exists(onionKeyFile))
+			{
+				Console.Error.WriteLine("Onion private key file not found.");
+				return false;
+			}
+			if (!File.Exists(onionHostFile))
+			{
+				Console.Error.WriteLine("Onion hostname file not found.");
+				return false;
+			}
+
+			string expectedOnion = File.ReadAllText(onionHostFile).Substring(0,OnionAddress.AddressLength);
+
+			OnionAddress onion = OnionAddress.ReadFromOnionFile(onionKeyFile);
+
+			if (!onion.Onion.Equals(expectedOnion))
+			{
+				Console.Error.WriteLine("Onion address mismatch:");
+				Console.Error.WriteLine("  Expected address: " + expectedOnion);
+				Console.Error.WriteLine("  Computed address: " + onion.Onion);
+				return false;
+			}
+			else
+			{
+				Console.Error.WriteLine("Onion address verified: " + onion.Onion);
+				return true;
 			}
 		}
 
