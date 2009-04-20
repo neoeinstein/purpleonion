@@ -11,6 +11,7 @@ namespace Xpdm.PurpleOnion
 		public static readonly string KeyFilename = "private_key";
 		public static readonly string HostFilename = "hostname";
 		public static readonly string Extension = ".onion";
+		public static readonly int AddressLength = 16;
 
 		private readonly RSA key;
 		
@@ -27,7 +28,7 @@ namespace Xpdm.PurpleOnion
 					{
 						hash = hasher.ComputeHash(asn.GetBytes());
 					}
-					onion = Base32Convert.ToString(hash).Substring(0,16).ToLowerInvariant();
+					onion = Base32Convert.ToString(hash).Substring(0,AddressLength).ToLowerInvariant();
 				}
 				return onion;
 			}
