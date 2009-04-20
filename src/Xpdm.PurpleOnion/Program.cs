@@ -89,13 +89,10 @@ namespace Xpdm.PurpleOnion
 					}
 					
 					string[] record = line.Split(LOG_FIELD_SEPARATOR);
-					Console.Write(record[0]);
 					string pkiXml = record[1];
 					
 					onion = OnionAddress.FromXmlString(pkiXml);
 
-					Console.WriteLine(" " + onion.Onion);
-					
 					WriteOnionDirectoryIfMatched(onion);
 				}
 			}
