@@ -110,8 +110,15 @@ namespace Xpdm.PurpleOnion
 					if (settings.ToMatch != null && settings.ToMatch.IsMatch(logOnion))
 					{
 						string pkiXml = record[1];
-					
-						onion = OnionAddress.FromXmlString(pkiXml);
+
+						try
+						{
+							onion = OnionAddress.FromXmlString(pkiXml);
+						}
+						catch (CryptographicException)
+						{
+							continue;
+						}
 
 						WriteOnionDirectoryIfMatched(onion);
 					}
