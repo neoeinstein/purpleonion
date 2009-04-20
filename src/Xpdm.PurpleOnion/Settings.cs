@@ -30,7 +30,7 @@ namespace Xpdm.PurpleOnion
 					v => { if (v != null) OutFilename = v; } },
 				{ "i|in=", "read in a file from a previous run\nexclusive of -o,-c, requires -m",
 					v => { if (v != null) InFilename = v; } },
-				{ "c|check=", "an onion directory to verify\nexclusive of -i,-o",
+				{ "c|check=", "verify the contents of an onion directory\nexclusive of -i,-o",
 					v => { if (v != null) CheckDir = v; } },
 				{ "b|basedir=", "base working directory",
 					v => { if (v != null) BaseDir = v; } },
