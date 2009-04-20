@@ -26,11 +26,11 @@ namespace Xpdm.PurpleOnion
 			options = new OptionSet() {
 				{ "m|match=", "create onion directories for matches",
 					v => { if (v != null) ToMatch = new Regex(v, RegexOptions.Compiled); } },
-				{ "o|out=", "file to which generated pairs should be written\nexclusive of -i",
+				{ "o|out=", "file to which generated pairs should be written\nexclusive of -i,-c",
 					v => { if (v != null) OutFilename = v; } },
-				{ "i|in=", "read in a file from a previous run\nexclusive of -o, requires -m",
+				{ "i|in=", "read in a file from a previous run\nexclusive of -o,-c, requires -m",
 					v => { if (v != null) InFilename = v; } },
-				{ "c|check=", "an onion directory to verify",
+				{ "c|check=", "an onion directory to verify\nexclusive of -i,-o",
 					v => { if (v != null) CheckDir = v; } },
 				{ "b|basedir=", "base working directory",
 					v => { if (v != null) BaseDir = v; } },
@@ -63,7 +63,7 @@ namespace Xpdm.PurpleOnion
 		
 		public void ShowHelp(TextWriter o)
 		{
-			o.WriteLine("Usage: " + AppName + " [-v] [-b] [[-i|-o] filename] [-m regex] [-n number]");
+			o.WriteLine("Usage: " + AppName + " [-v] [-b] [[[-i|-o] filename] [-m regex] [-n number]|-c dir]");
 			o.WriteLine("Brute-forces the creation of many RSA key-pairs attempting to find one whose");
 			o.WriteLine("Tor onion address matches a given pattern. For the creation of vanity");
 			o.WriteLine("onion addresses or burning through excess entropy.");
