@@ -61,14 +61,6 @@ namespace Xpdm.PurpleOnion
 			return retVal;
 		}
 
-//		public void FromXmlString(string xml)
-//		{
-//			RSA pki = new RSACryptoServiceProvider();
-//			pki.FromXmlString(xml);
-//			key.Clear();
-//			key = pki;
-//		}
-		
 		public string ToXmlString(bool includePrivate)
 		{
 			return key.ToXmlString(includePrivate);
@@ -80,13 +72,6 @@ namespace Xpdm.PurpleOnion
 			return new OnionAddress(pki);
 		}
 		
-//		public void FromOpenSslString(string ssl)
-//		{
-//			RSA pki = RSAExtensions.FromOpenSslString(ssl);
-//			key.Clear();
-//			key = pki;
-//		}
-
 		public string ToOpenSslString()
 		{
 			return key.ToOpenSslString();
@@ -94,8 +79,8 @@ namespace Xpdm.PurpleOnion
 
 		public static OnionAddress ReadFromOnionFile(string file)
 		{
-			string openSslString = File.ReadAllText(file);
-			return FromOpenSslString(openSslString);
+			RSA pki = RSAExtensions.FromOpenSslFile(file);
+			return new OnionAddress(pki);
 		}
 		
 		public void WriteToOnionFiles(string dir)
@@ -106,6 +91,43 @@ namespace Xpdm.PurpleOnion
 			}
 			key.ToOpenSslFile(Path.Combine(dir, KeyFilename));
 			File.WriteAllText(Path.Combine(dir, HostFilename), Onion + Extension + "\n");
+		}
+
+		public static bool AreKeysSame(OnionAddress left, OnionAddress right)
+		{
+			if (left == null || right == null)
+			{
+				return false;
+			}
+
+			RSAParameters lparam = left.key.ExportParameters(false);
+			RSAParameters rparam = right.key.ExportParameters(false);
+
+			if (lparam.Exponent == null || rparam.Exponent == null
+			    || lparam.Modulus == null || rparam.Modulus == null
+			    || lparam.Exponent.Length != rparam.Exponent.Length 
+			    || lparam.Modulus.Length != rparam.Modulus.Length)
+			{
+				return false;
+			}
+
+			for(int i = 0; i < lparam.Exponent.Length; ++i)
+			{
+				if (lparam.Exponent[i] != rparam.Exponent[i])
+				{
+					return false;
+				}
+			}
+
+			for (int i = 0; i < lparam.Modulus.Length; ++i)
+			{
+				if (lparam.Modulus[i] != rparam.Modulus[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 		
 		bool disposed = false;

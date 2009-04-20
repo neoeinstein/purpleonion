@@ -126,16 +126,15 @@ namespace Xpdm.PurpleOnion
 			int count = 0;
 			while (File.Exists(privateKeyPath))
 			{
-				string currentKey = File.ReadAllText(privateKeyPath);
-				if (currentKey == onion.ToOpenSslString())
+				++count;
+				OnionAddress priorOnion = OnionAddress.ReadFromOnionFile(privateKeyPath);
+				if (OnionAddress.AreKeysSame(priorOnion, onion))
 				{
 					return null;
 				}
-				if (count == 0)
-				{
-					Console.WriteLine("Collision found for onion address: " + onion.Onion);
-				}
-				++count;
+
+				Console.WriteLine("Collision: " + onion.Onion);
+
 				extension = "_" + count.ToString();
 				privateKeyPath = Path.Combine(onionDir + extension, OnionAddress.KeyFilename);
 			}
