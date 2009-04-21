@@ -1,19 +1,20 @@
-PurpleOnion
-===========
+Por.OnionGenerator
+==================
+Part of `Por: the Purple Onion Router'
 
 For usage run (using Mono as the example):
-# mono PurpleCarrot.exe --help
+# mono Por.OnionGenerator.exe --help
 
 LICENSE
 -------
-PurpleOnion binaries and sources are licensed under a BSD-style license.
+Por binaries and sources are licensed under a BSD-style license.
 For more information, see the LICENSE file.
 
 COMPILATION
 -----------
-PurpleOnion requires at least Mono 2.0 to compile and run. The compiled
-binary will run on the .NET 2.0 framework with the appropriate libraries
-available, but POSIX is not supported on Windows machines.
+Por.OnionGenerator requires at least Mono 2.0 to compile and run. The
+compiled binary will run on the .NET 2.0 framework with the appropriate
+libraries available, but POSIX is not supported on Windows machines.
 
 If the application will be run on a POSIX machine, support for receiving
 certain terminating signals and exiting cleanly is automatically enabled
@@ -62,3 +63,5 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
+[0]: http://mono-project.com/Guidelines:Application_Deployment
+

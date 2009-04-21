@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AssemblyName>PurpleOnion</AssemblyName>
+    <AssemblyName>Por.OnionGenerator</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,11 +42,4 @@
     <Compile Include="Options.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="3.5" xmlns="">
-        <Deployment.LinuxDeployData scriptName="purpleonion" />
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

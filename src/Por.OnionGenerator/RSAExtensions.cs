@@ -5,7 +5,7 @@ using System.Text;
 using Mono.Security;
 using Mono.Security.Cryptography;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	static class RSAExtensions
 	{

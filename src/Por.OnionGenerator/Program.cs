@@ -7,7 +7,7 @@ using Mono.Security.Cryptography;
 using Mono.Unix;
 using Mono.Unix.Native;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	static class Program
 	{

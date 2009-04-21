@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	static class Base32Convert
 	{

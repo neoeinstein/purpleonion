@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Mono.Options;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	sealed class Settings
 	{

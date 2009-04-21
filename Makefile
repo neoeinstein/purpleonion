@@ -1,7 +1,7 @@
 BINDIR = build
 SRCDIR = src
-SOURCES = $(wildcard $(SRCDIR)/Xpdm.PurpleOnion/*.cs)
-EXE = PurpleOnion.exe
+SOURCES = $(wildcard $(SRCDIR)/Por.OnionGenerator/*.cs)
+EXE = Por.OnionGenerator.exe
 RULESET = self-test
 RULEIGNORE = rules.ignore
 MONO_OPTIONS = $(SRCDIR)/Options.cs

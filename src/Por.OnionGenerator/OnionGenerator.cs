@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	sealed class OnionGenerator
 	{

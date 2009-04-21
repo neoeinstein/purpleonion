@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using Mono.Security;
 using Mono.Security.Cryptography;
 
-namespace Xpdm.PurpleOnion
+namespace Por.OnionGenerator
 {
 	public sealed class OnionAddress : IDisposable, IEquatable<OnionAddress>
 	{
