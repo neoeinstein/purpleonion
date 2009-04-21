@@ -6,7 +6,7 @@ using Mono.Security.Cryptography;
 
 namespace Xpdm.PurpleOnion
 {
-	sealed class OnionAddress : IDisposable
+	sealed class OnionAddress : IDisposable, IEquatable<OnionAddress>
 	{
 		public static readonly string KeyFilename = "private_key";
 		public static readonly string HostFilename = "hostname";
@@ -14,7 +14,7 @@ namespace Xpdm.PurpleOnion
 		public static readonly int AddressLength = 16;
 
 		private readonly RSA key;
-		
+
 		private string onion = null;
 		public string Onion
 		{
@@ -147,14 +147,33 @@ namespace Xpdm.PurpleOnion
 			}
 			if (disposing)
 			{
-				IDisposable disKey = key as IDisposable;
-				if (disKey != null)
+				if (key != null)
 				{
-					disKey.Dispose();
+					((IDisposable)key).Dispose();
 				}
 			}
 			disposed = true;
 		}
 
+		public bool Equals(OnionAddress other)
+		{
+			return this.Onion.Equals(other.Onion);
+		}
+
+		public override bool Equals(object other)
+		{
+			OnionAddress otherOnion = other as OnionAddress;
+			return otherOnion != null && this.Equals(otherOnion);
+		}
+
+		public override int GetHashCode()
+		{
+			return this.Onion.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return this.Onion;
+		}
 	}
 }
