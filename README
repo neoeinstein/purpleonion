@@ -11,11 +11,9 @@ For more information, see the LICENSE file.
 
 COMPILATION
 -----------
-PurpleOnion requires at least Mono 2.2 to compile and run, but with the
-Mono.Options Options.cs code snippet placed in the 'src/' directory, will
-compile with Mono 2.0. The compiled binary may run on the .NET 2.0
-framework with the appropriate libraries available, but this has not been
-tested.
+PurpleOnion requires at least Mono 2.0 to compile and run. The compiled
+binary will run on the .NET 2.0 framework with the appropriate libraries
+available, but POSIX is not supported on Windows machines.
 
 If the application will be run on a POSIX machine, support for receiving
 certain terminating signals and exiting cleanly is automatically enabled

@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xpdm.PurpleOnion", "src\Xpdm.PurpleOnion\Xpdm.PurpleOnion.csproj", "{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 0.1
+		outputpath = build
+		StartupItem = src\Xpdm.PurpleOnion\Xpdm.PurpleOnion.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = Flat
+		$1.ResourceNamePolicy = FileName
+		$0.StandardHeader = $2
+		$2.Text = 
+		$2.inheritsSet = MITX11License
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.TabsToSpaces = False
+		$3.NoTabsAfterNonTabs = True
+		$3.RemoveTrailingWhitespace = True
+		$3.EolMarker = Unix
+		$0.VersionControlPolicy = $4
+		$4.inheritsSet = Mono
+		$0.ChangeLogPolicy = $5
+		$5.UpdateMode = None
+		$5.MessageStyle = $6
+		$6.LineAlign = 0
+		$5.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal
