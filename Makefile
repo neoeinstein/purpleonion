@@ -1,4 +1,4 @@
-BINDIR = bin
+BINDIR = build
 SRCDIR = src
 SOURCES = $(wildcard $(SRCDIR)/Xpdm.PurpleOnion/*.cs)
 EXE = PurpleOnion.exe
@@ -9,21 +9,22 @@ REFERENCES = \
 	Mono.Security \
 	Mono.Posix
 DEFINES =
+BUILD = Debug
 
-$(BINDIR)/$(EXE): $(MONO_OPTIONS) $(SOURCES) $(BINDIR)
-	gmcs -t:exe -out:$@ $(addprefix -r:,$(REFERENCES)) $(addprefix -d:,$(DEFINES)) $(MONO_OPTIONS) $(SOURCES)
+#$(BINDIR)/$(EXE): $(MONO_OPTIONS) $(SOURCES) $(BINDIR)
+#	gmcs -t:exe -out:$@ $(addprefix -r:,$(REFERENCES)) $(addprefix -d:,$(DEFINES)) $(MONO_OPTIONS) $(SOURCES)
 
-$(BINDIR):
-	mkdir -p $(BINDIR)
+#$(BINDIR):
+#	mkdir -p $(BINDIR)
 
-$(MONO_OPTIONS):
-	cp `pkg-config --variable=Sources mono-options` $(SRCDIR)
+#$(MONO_OPTIONS):
+#	cp `pkg-config --variable=Sources mono-options` $(SRCDIR)
 
 gendarme:
-	gendarme --set $(RULESET) --ignore $(RULEIGNORE) $(BINDIR)/$(EXE)
+	gendarme --set $(RULESET) --ignore $(RULEIGNORE) $(BINDIR)/$(BUILD)/$(EXE)
 
-clean:
-	rm -f $(BINDIR)/*
+#clean:
+#	rm -f $(BINDIR)/*
 
-distclean: clean
-	rm -f $(MONO_OPTIONS)
+#distclean: clean
+#	rm -f $(MONO_OPTIONS)
