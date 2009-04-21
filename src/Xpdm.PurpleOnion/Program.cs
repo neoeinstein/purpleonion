@@ -4,10 +4,8 @@ using System.Security.Cryptography;
 using System.Threading;
 using Mono.Security;
 using Mono.Security.Cryptography;
-#if POSIX
 using Mono.Unix;
 using Mono.Unix.Native;
-#endif
 
 namespace Xpdm.PurpleOnion
 {
@@ -59,7 +57,18 @@ namespace Xpdm.PurpleOnion
 				{
 					AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
 					GenerateOnions();
-					WaitForSignal();
+					try
+					{
+						WaitForSignal();
+					}
+					catch (FileNotFoundException ex)
+					{
+						UnableToLoadPosix(ex);
+					}
+					catch (TypeLoadException ex)
+					{
+						UnableToLoadPosix(ex);
+					}
 				}
 			}
 			return 0;
@@ -174,7 +183,6 @@ namespace Xpdm.PurpleOnion
 				Console.WriteLine("Found: " + onion.Onion);
 				WriteOnionDirectory(onion);
 			}
-
 		}
 
 		private static void WriteOnionDirectory(OnionAddress onion)
@@ -214,7 +222,6 @@ namespace Xpdm.PurpleOnion
 
 		private static void WaitForSignal()
 		{
-#if POSIX
 			UnixSignal term = new UnixSignal(Signum.SIGTERM);
 			UnixSignal ctlc = new UnixSignal(Signum.SIGINT);
 			UnixSignal hup = new UnixSignal(Signum.SIGHUP);
@@ -222,9 +229,22 @@ namespace Xpdm.PurpleOnion
 			UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
 
 			UnhandledExceptionHandler(null, null);
-#else
+		}
+
+		private static void UnableToLoadPosix(Exception ex)
+		{
+			Console.Error.WriteLine("Unable to catch POSIX signals.");
+			if (ex is TypeLoadException)
+			{
+				Console.Error.WriteLine(" Type could not be loaded: {0}", ((TypeLoadException)ex).TypeName);
+			}
+			else if (ex is FileNotFoundException)
+			{
+				Console.Error.WriteLine(" Assembly could not be loaded: {0}", ((FileNotFoundException)ex).FileName);
+			}
+			Console.Error.WriteLine(" Error message = '{0}'", ex.Message);
+
 			Thread.Sleep(int.MaxValue);
-#endif
 		}
 
 		private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)

@@ -18,10 +18,8 @@ framework with the appropriate libraries available, but this has not been
 tested.
 
 If the application will be run on a POSIX machine, support for receiving
-certain terminating signals and exiting cleanly can be enabled by adding
-`POSIX=YesPlease' to the make command:
-
-make POSIX=YesPlease
+certain terminating signals and exiting cleanly is automatically enabled
+where Mono.Posix is available.
 
 EXECUTION
 ---------
