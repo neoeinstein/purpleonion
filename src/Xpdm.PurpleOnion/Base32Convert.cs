@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 
@@ -18,9 +19,6 @@ namespace Xpdm.PurpleOnion
 		private const byte INVALID_CHAR = 255;
 		private static readonly byte PADDING_CHAR = boundaries[0];
 
-		private delegate void Action();
-		private delegate byte Norm(byte b);
-
 		public static string ToString(byte[] plain)
 		{
 			short buffer = 0;
@@ -29,7 +27,7 @@ namespace Xpdm.PurpleOnion
 			StringBuilder sb = new StringBuilder();
 			byte index = 0;
 			
-			Action chomp = delegate() {
+			Action chomp = () => {
 				index = (byte) (buffer >> (hi - 5));
 				sb.Append(base32chars[index]);
 				buffer = (short) (buffer ^ index << (hi - 5));
@@ -78,7 +76,7 @@ namespace Xpdm.PurpleOnion
 			int currentChar = 0;
 			byte[] encBuf = ASCIIEncoding.Default.GetBytes(enc);
 			
-			Norm normalize = delegate(byte b) {
+			Func<byte,byte> normalize = (byte b) => {
 				if (b == boundaries[PADDING_BOUND])
 					return PADDING_CHAR;
 				
