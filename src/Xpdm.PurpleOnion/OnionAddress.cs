@@ -6,7 +6,7 @@ using Mono.Security.Cryptography;
 
 namespace Xpdm.PurpleOnion
 {
-	sealed class OnionAddress : IDisposable, IEquatable<OnionAddress>
+	public sealed class OnionAddress : IDisposable, IEquatable<OnionAddress>
 	{
 		public static readonly string KeyFilename = "private_key";
 		public static readonly string HostFilename = "hostname";
@@ -157,13 +157,13 @@ namespace Xpdm.PurpleOnion
 
 		public bool Equals(OnionAddress other)
 		{
-			return this.Onion.Equals(other.Onion);
+			return other != null && this.Onion.Equals(other.Onion);
 		}
 
-		public override bool Equals(object other)
+		public override bool Equals(object obj)
 		{
-			OnionAddress otherOnion = other as OnionAddress;
-			return otherOnion != null && this.Equals(otherOnion);
+			OnionAddress other = obj as OnionAddress;
+			return other != null && this.Equals(other);
 		}
 
 		public override int GetHashCode()

@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Xpdm.PurpleOnion
 {
-	class OnionGenerator
+	sealed class OnionGenerator
 	{
 		private readonly BackgroundWorker worker = new BackgroundWorker();
 		public bool Running { get; protected set; }
@@ -28,7 +28,7 @@ namespace Xpdm.PurpleOnion
 			StopRequested = true;
 		}
 
-		protected virtual void GenerateOnion(object sender, DoWorkEventArgs e)
+		private void GenerateOnion(object sender, DoWorkEventArgs e)
 		{
 			if (StopRequested)
 			{
@@ -45,7 +45,7 @@ namespace Xpdm.PurpleOnion
 			}
 		}
 
-		protected virtual void RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private void RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			if (e.Cancelled || StopRequested)
 			{
@@ -71,7 +71,7 @@ namespace Xpdm.PurpleOnion
 			}
 		}
 		
-		protected virtual void OnOnionGenerated(OnionGeneratedEventArgs e)
+		private void OnOnionGenerated(OnionGeneratedEventArgs e)
 		{
 			EventHandler<OnionGeneratedEventArgs> handler = OnionGenerated;
 			if (handler != null)
@@ -80,9 +80,7 @@ namespace Xpdm.PurpleOnion
 			}
 		}
 		
-		public class OnionGeneratedEventArgs : EventArgs {
-			new internal static readonly OnionGeneratedEventArgs Empty = new OnionGeneratedEventArgs();
-			
+		public sealed class OnionGeneratedEventArgs : EventArgs {
 			public bool Cancel { get; set; }
 			public OnionAddress Result { get; set; }
 		}

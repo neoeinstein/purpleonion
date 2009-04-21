@@ -1,3 +1,8 @@
+# These may change in the future. Using static readonly values enables the
+# value to change without requiring recompilation of library clients.
+R: Gendarme.Rules.Performance.PreferLiteralOverInitOnlyFieldsRule
+T: Xpdm.PurpleOnion.OnionAddress
+
 # non-PurpleOnion code / Mono.Options
 
 R: Gendarme.Rules.Correctness.CheckParametersNullityInVisibleMethodsRule

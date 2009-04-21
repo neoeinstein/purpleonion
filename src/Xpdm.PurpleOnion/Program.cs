@@ -88,7 +88,6 @@ namespace Xpdm.PurpleOnion
 		
 		private static void AttemptToMatchLog()
 		{
-			OnionAddress onion;
 			using (StreamReader file = File.OpenText(Path.Combine(settings.BaseDir, settings.InFilename)))
 			{
 				while (!file.EndOfStream)
@@ -113,14 +112,15 @@ namespace Xpdm.PurpleOnion
 
 						try
 						{
-							onion = OnionAddress.FromXmlString(pkiXml);
+							using (OnionAddress onion = OnionAddress.FromXmlString(pkiXml))
+							{
+								WriteOnionDirectoryIfMatched(onion);
+							}
 						}
 						catch (CryptographicException)
 						{
-							continue;
+							;
 						}
-
-						WriteOnionDirectoryIfMatched(onion);
 					}
 				}
 			}
@@ -150,19 +150,20 @@ namespace Xpdm.PurpleOnion
 
 			string expectedOnion = File.ReadAllText(onionHostFile).Substring(0,OnionAddress.AddressLength);
 
-			OnionAddress onion = OnionAddress.ReadFromOnionFile(onionKeyFile);
-
-			if (!onion.Onion.Equals(expectedOnion))
+			using (OnionAddress onion = OnionAddress.ReadFromOnionFile(onionKeyFile))
 			{
-				Console.Error.WriteLine("Onion address mismatch:");
-				Console.Error.WriteLine("  Expected address: " + expectedOnion);
-				Console.Error.WriteLine("  Computed address: " + onion.Onion);
-				return false;
-			}
-			else
-			{
-				Console.Error.WriteLine("Onion address verified: " + onion.Onion);
-				return true;
+				if (!onion.Onion.Equals(expectedOnion))
+				{
+					Console.Error.WriteLine("Onion address mismatch:");
+					Console.Error.WriteLine("  Expected address: " + expectedOnion);
+					Console.Error.WriteLine("  Computed address: " + onion.Onion);
+					return false;
+				}
+				else
+				{
+					Console.Error.WriteLine("Onion address verified: " + onion.Onion);
+					return true;
+				}
 			}
 		}
 
@@ -195,10 +196,12 @@ namespace Xpdm.PurpleOnion
 			while (File.Exists(privateKeyPath))
 			{
 				++count;
-				OnionAddress priorOnion = OnionAddress.ReadFromOnionFile(privateKeyPath);
-				if (OnionAddress.AreKeysSame(priorOnion, onion))
+				using (OnionAddress priorOnion = OnionAddress.ReadFromOnionFile(privateKeyPath))
 				{
-					return null;
+					if (OnionAddress.AreKeysSame(priorOnion, onion))
+					{
+						return null;
+					}
 				}
 
 				Console.WriteLine("Collision: " + onion.Onion);
