@@ -222,11 +222,12 @@ namespace Xpdm.PurpleOnion
 
 		private static void WaitForSignal()
 		{
-			UnixSignal term = new UnixSignal(Signum.SIGTERM);
-			UnixSignal ctlc = new UnixSignal(Signum.SIGINT);
-			UnixSignal hup = new UnixSignal(Signum.SIGHUP);
-
-			UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
+			using (UnixSignal term = new UnixSignal(Signum.SIGTERM))
+			using (UnixSignal ctlc = new UnixSignal(Signum.SIGINT))
+			using (UnixSignal hup = new UnixSignal(Signum.SIGHUP))
+			{
+				UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
+			}
 
 			UnhandledExceptionHandler(null, null);
 		}
@@ -234,13 +235,15 @@ namespace Xpdm.PurpleOnion
 		private static void UnableToLoadPosix(Exception ex)
 		{
 			Console.Error.WriteLine("Unable to catch POSIX signals.");
-			if (ex is TypeLoadException)
+			TypeLoadException tlex = ex as TypeLoadException;
+			if (tlex != null)
 			{
-				Console.Error.WriteLine(" Type could not be loaded: {0}", ((TypeLoadException)ex).TypeName);
+				Console.Error.WriteLine(" Type could not be loaded: {0}", tlex.TypeName);
 			}
-			else if (ex is FileNotFoundException)
+			FileNotFoundException fnfex = ex as FileNotFoundException;
+			if (fnfex != null)
 			{
-				Console.Error.WriteLine(" Assembly could not be loaded: {0}", ((FileNotFoundException)ex).FileName);
+				Console.Error.WriteLine(" Assembly could not be loaded: {0}", fnfex.FileName);
 			}
 			Console.Error.WriteLine(" Error message = '{0}'", ex.Message);
 
@@ -271,7 +274,7 @@ namespace Xpdm.PurpleOnion
 				Thread.Sleep(0);
 			}
 
-			Console.WriteLine("");
+			Console.WriteLine();
 			Console.WriteLine("Closed cleanly");
 		}
 

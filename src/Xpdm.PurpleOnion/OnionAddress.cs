@@ -15,7 +15,7 @@ namespace Xpdm.PurpleOnion
 
 		private readonly RSA key;
 
-		private string onion = null;
+		private string onion;
 		public string Onion
 		{
 			get
@@ -131,7 +131,7 @@ namespace Xpdm.PurpleOnion
 			return true;
 		}
 		
-		bool disposed = false;
+		bool disposed;
 
 		public void Dispose()
 		{
