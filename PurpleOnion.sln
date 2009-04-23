@@ -3,12 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Por.OnionGenerator", "src\Por.OnionGenerator\Por.OnionGenerator.csproj", "{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Por.Core", "src\Por.Core\Por.Core.csproj", "{451F8693-98B3-414D-A8F5-F238D0686788}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{451F8693-98B3-414D-A8F5-F238D0686788}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{451F8693-98B3-414D-A8F5-F238D0686788}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{451F8693-98B3-414D-A8F5-F238D0686788}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{451F8693-98B3-414D-A8F5-F238D0686788}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -3,8 +3,9 @@ using System.IO;
 using System.Security.Cryptography;
 using Mono.Security;
 using Mono.Security.Cryptography;
+using Por.Core.Utilities;
 
-namespace Por.OnionGenerator
+namespace Por.Core
 {
 	public sealed class OnionAddress : IDisposable, IEquatable<OnionAddress>
 	{
@@ -22,7 +23,7 @@ namespace Por.OnionGenerator
 			{
 				if (onion == null)
 				{
-					ASN1 asn = RSAExtensions.ToAsn1Key(key);
+					ASN1 asn = RSAOperations.ToAsn1Key(key);
 					byte[] hash;
 					using (SHA1 hasher = SHA1.Create())
 					{
@@ -69,18 +70,18 @@ namespace Por.OnionGenerator
 
 		public static OnionAddress FromOpenSslString(string ssl)
 		{
-			RSA pki = RSAExtensions.FromOpenSslString(ssl);
+			RSA pki = RSAOperations.FromOpenSslString(ssl);
 			return new OnionAddress(pki);
 		}
 		
 		public string ToOpenSslString()
 		{
-			return RSAExtensions.ToOpenSslString(key);
+			return RSAOperations.ToOpenSslString(key);
 		}
 
 		public static OnionAddress ReadFromOnionFile(string file)
 		{
-			RSA pki = RSAExtensions.FromOpenSslFile(file);
+			RSA pki = RSAOperations.FromOpenSslFile(file);
 			return new OnionAddress(pki);
 		}
 		
@@ -90,7 +91,7 @@ namespace Por.OnionGenerator
 			{
 				throw new NotSupportedException("Cannot create an onion from a public-only key");
 			}
-			RSAExtensions.ToOpenSslFile(key, Path.Combine(dir, KeyFilename));
+			RSAOperations.ToOpenSslFile(key, Path.Combine(dir, KeyFilename));
 			File.WriteAllText(Path.Combine(dir, HostFilename), Onion + Extension + "\n");
 		}
 

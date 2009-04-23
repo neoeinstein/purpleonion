@@ -5,9 +5,9 @@ using System.Text;
 using Mono.Security;
 using Mono.Security.Cryptography;
 
-namespace Por.OnionGenerator
+namespace Por.Core.Utilities
 {
-	static class RSAExtensions
+	public static class RSAOperations
 	{
 		private const string BEGIN_RSA_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----";
 		private const string END_RSA_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----";
@@ -55,7 +55,7 @@ namespace Por.OnionGenerator
 
 		public static void ToOpenSslFile(RSA rsa, string filename)
 		{
-			string keyString = RSAExtensions.ToOpenSslString(rsa);
+			string keyString = ToOpenSslString(rsa);
 			StringBuilder sb = new StringBuilder();
 
 			sb.AppendLine(BEGIN_RSA_PRIVATE_KEY);

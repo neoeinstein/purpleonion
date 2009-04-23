@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 // Information about this assembly is defined by the following attributes. 
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("Por.OnionGenerator")]
-[assembly: AssemblyDescription("The Purple Onion Router: Hidden Service Address Generator")]
+[assembly: AssemblyTitle("Por.Core")]
+[assembly: AssemblyDescription("The Purple Onion Router: Core Services")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else

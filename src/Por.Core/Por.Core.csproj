@@ -5,18 +5,19 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A4F3A07A-31D9-4F45-83D6-E59C5EE1BCA5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>Por.OnionGenerator</AssemblyName>
+    <ProjectGuid>{451F8693-98B3-414D-A8F5-F238D0686788}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Por.Core</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\build\Debug</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -24,24 +25,20 @@
     <OutputPath>..\..\build\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Posix" />
-    <Reference Include="Mono.Security" />
     <Reference Include="System" />
+    <Reference Include="Mono.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="OnionGenerator.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="OnionAddress.cs" />
+    <Compile Include="Utilities\Base32Convert.cs" />
+    <Compile Include="Utilities\RSAOperations.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Por.Core\Por.Core.csproj">
-      <Project>{451F8693-98B3-414D-A8F5-F238D0686788}</Project>
-      <Name>Por.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

@@ -7,6 +7,9 @@ using Mono.Security.Cryptography;
 using Mono.Unix;
 using Mono.Unix.Native;
 
+// TODO: This dependency should be refactored out to another class
+using Por.Core;
+
 namespace Por.OnionGenerator
 {
 	static class Program

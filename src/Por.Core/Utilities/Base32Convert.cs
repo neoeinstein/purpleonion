@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Por.OnionGenerator
+namespace Por.Core.Utilities
 {
-	static class Base32Convert
+	public static class Base32Convert
 	{
 		private const string base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 		private static readonly byte[] boundaries = System.Text.ASCIIEncoding.Default.GetBytes("=27AZaz");
