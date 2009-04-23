@@ -35,7 +35,7 @@ namespace Por.Core
 			}
 		}
 		
-		private bool IsPublicOnly
+		public bool IsPublicOnly
 		{
 			get
 			{

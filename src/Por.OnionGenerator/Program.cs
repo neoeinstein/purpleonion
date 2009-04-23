@@ -6,6 +6,7 @@ using Mono.Security;
 using Mono.Security.Cryptography;
 using Mono.Unix;
 using Mono.Unix.Native;
+using log4net;
 
 // TODO: This dependency should be refactored out to another class
 using Por.Core;
@@ -14,16 +15,17 @@ namespace Por.OnionGenerator
 {
 	static class Program
 	{
-		private const char LOG_FIELD_SEPARATOR = ',';
-		private static bool receivedShutdownSignal;
+		private static readonly ILog Log 
+			= LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		
+		private const int CHECK_INTERVAL = 100;
 		private static Settings settings = new Settings();
-		private static TextWriter log;
-		private static ulong count = 0;
 		private static OnionGenerator[] generators;
-
 		
 		private static int Main(string[] args)
 		{
+			log4net.Config.XmlConfigurator.Configure();
+
 			if(!settings.TryParse(args))
 			{
 				return 1;
@@ -37,54 +39,56 @@ namespace Por.OnionGenerator
 
 			if (string.IsNullOrEmpty(settings.BaseDir))
 			{
+				Log.Debug("Base directory set to invalid value, setting it to '.'");
 				settings.BaseDir = ".";
 			}
 
 			if (!string.IsNullOrEmpty(settings.CheckDir))
 			{
-				if (!IsOnionDirectoryValid(settings.CheckDir))
+				Log.DebugFormat("Checking onion directory: {0}", settings.CheckDir);
+				try
 				{
-					return 1;
+					OnionDirectory.Validate(settings.CheckDir);
 				}
-				else
+				catch (Exception ex)
 				{
+					Console.Error.WriteLine("Validation error: " + ex.Message);
+					return 1;
 				}
 			}
 			else if (!string.IsNullOrEmpty(settings.InFilename))
 			{
-				AttemptToMatchLog();
+				Log.DebugFormat("Processing prior run file: {0}", settings.InFilename);
+				if (settings.ToMatch == null)
+				{
+					settings.ShowOptionsError("Reading in prior run (-i) requires a match to test (-m)");
+					return 1;
+				}
+				Log.DebugFormat("Looking for matches to: {0}", settings.ToMatch.ToString());
+				OnionLogProcessor processor
+					= new OnionLogProcessor(Path.Combine(settings.BaseDir, settings.InFilename),
+					                        settings.ToMatch);
+				processor.PickDirectory = PickOutputDirectory;
+				processor.ProcessLog();
 			}
 			else
 			{
-				using(log = OpenLog())
+				AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
+				GenerateOnions();
+				try
 				{
-					AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
-					GenerateOnions();
-					try
-					{
-						WaitForSignal();
-					}
-					catch (FileNotFoundException ex)
-					{
-						UnableToLoadPosix(ex);
-					}
-					catch (TypeLoadException ex)
-					{
-						UnableToLoadPosix(ex);
-					}
+					WaitForSignal();
+				}
+				catch (FileNotFoundException ex)
+				{
+					UnableToLoadPosix(ex);
+				}
+				catch (TypeLoadException ex)
+				{
+					UnableToLoadPosix(ex);
 				}
 			}
 			return 0;
-		}
-
-		private static TextWriter OpenLog()
-		{
-			if (!string.IsNullOrEmpty(settings.OutFilename))
-			{
-				Directory.CreateDirectory(settings.BaseDir);
-				return File.AppendText(Path.Combine(settings.BaseDir, settings.OutFilename));
-			}
-			return null;
 		}
 
 		private static void GenerateOnions()
@@ -92,133 +96,37 @@ namespace Por.OnionGenerator
 			generators = new OnionGenerator[settings.WorkerCount];
 			for (int i = 0; i < generators.Length; ++i)
 			{
-				generators[i] = new OnionGenerator();
-				generators[i].OnionGenerated += ProcessGeneratedOnion;
-				generators[i].Start();
+				OnionGenerator o  = new OnionGenerator();
+				o.OnionOutputFile = settings.OutFilename;
+				o.OnionPattern = settings.ToMatch;
+				o.PickDirectory = PickOutputDirectory;
+				o.Start();
+				generators[i] = o;
 			}
 		}
 		
-		private static void AttemptToMatchLog()
+		private static string PickOutputDirectory(OnionAddress onion)
 		{
-			using (StreamReader file = File.OpenText(Path.Combine(settings.BaseDir, settings.InFilename)))
-			{
-				while (!file.EndOfStream)
-				{
-					string line = file.ReadLine().Trim();
-					if (string.IsNullOrEmpty(line) || line.StartsWith("#"))
-					{
-						continue;
-					}
-					
-					string[] record = line.Split(LOG_FIELD_SEPARATOR);
-
-					if (record.Length != 2)
-					{
-						continue;
-					}
-
-					string logOnion = record[0];
-					if (settings.ToMatch != null && settings.ToMatch.IsMatch(logOnion))
-					{
-						string pkiXml = record[1];
-
-						try
-						{
-							using (OnionAddress onion = OnionAddress.FromXmlString(pkiXml))
-							{
-								WriteOnionDirectoryIfMatched(onion);
-							}
-						}
-						catch (CryptographicException)
-						{
-							;
-						}
-					}
-				}
-			}
-		}
-
-		private static bool IsOnionDirectoryValid(string dir)
-		{
-			if (!Directory.Exists(dir))
-			{
-				Console.Error.WriteLine("Onion directory '" + dir + "' does not exist.");
-				return false;
-			}
-
-			string onionKeyFile = Path.Combine(dir, OnionAddress.KeyFilename);
-			string onionHostFile = Path.Combine(dir, OnionAddress.HostFilename);
-
-			if (!File.Exists(onionKeyFile))
-			{
-				Console.Error.WriteLine("Onion private key file not found.");
-				return false;
-			}
-			if (!File.Exists(onionHostFile))
-			{
-				Console.Error.WriteLine("Onion hostname file not found.");
-				return false;
-			}
-
-			string expectedOnion = File.ReadAllText(onionHostFile).Substring(0,OnionAddress.AddressLength);
-
-			using (OnionAddress onion = OnionAddress.ReadFromOnionFile(onionKeyFile))
-			{
-				if (!onion.Onion.Equals(expectedOnion))
-				{
-					Console.Error.WriteLine("Onion address mismatch:");
-					Console.Error.WriteLine("  Expected address: " + expectedOnion);
-					Console.Error.WriteLine("  Computed address: " + onion.Onion);
-					return false;
-				}
-				else
-				{
-					Console.Error.WriteLine("Onion address verified: " + onion.Onion);
-					return true;
-				}
-			}
-		}
-
-		private static void WriteOnionDirectoryIfMatched(OnionAddress onion)
-		{
-			if (settings.ToMatch != null && settings.ToMatch.IsMatch(onion.Onion))
-			{
-				Console.WriteLine("Found: " + onion.Onion);
-				WriteOnionDirectory(onion);
-			}
-		}
-
-		private static void WriteOnionDirectory(OnionAddress onion)
-		{
-			string onionDir = PickOnionDirectory(onion);
-			if (!string.IsNullOrEmpty(onionDir))
-			{
-				Directory.CreateDirectory(onionDir);
-				onion.WriteToOnionFiles(onionDir);
-			}
-		}
-
-		private static string PickOnionDirectory(OnionAddress onion)
-		{
-			string onionDir = Path.Combine(settings.BaseDir, onion.Onion);	
-			string privateKeyPath = Path.Combine(onionDir, OnionAddress.KeyFilename);
+			string onionDir = Path.Combine(settings.BaseDir, onion.Onion);
 			string extension = string.Empty;
 			int count = 0;
-			while (File.Exists(privateKeyPath))
+			while (true)
 			{
-				++count;
-				using (OnionAddress priorOnion = OnionAddress.ReadFromOnionFile(privateKeyPath))
+				using (OnionAddress priorOnion = OnionDirectory.ReadDirectory(onionDir + extension))
 				{
+					if (priorOnion == null) break;
+
 					if (OnionAddress.AreKeysSame(priorOnion, onion))
 					{
+						Log.Info("Onion directory already exported, skipping");
 						return null;
 					}
 				}
 
-				Console.WriteLine("Collision: " + onion.Onion);
+				Log.WarnFormat("Onion directory collision: {0}", onion.Onion);
 
+				++count;
 				extension = "_" + count.ToString();
-				privateKeyPath = Path.Combine(onionDir + extension, OnionAddress.KeyFilename);
 			}
 			return onionDir + extension;
 		}
@@ -229,75 +137,67 @@ namespace Por.OnionGenerator
 			using (UnixSignal ctlc = new UnixSignal(Signum.SIGINT))
 			using (UnixSignal hup = new UnixSignal(Signum.SIGHUP))
 			{
-				UnixSignal.WaitAny(new UnixSignal[] { term, ctlc, hup });
-			}
+				UnixSignal[] signals = new UnixSignal[] { term, ctlc, hup };
+				while (AreGeneratorsRunning())
+				{
+					int retVal = UnixSignal.WaitAny(signals, 100);
 
-			UnhandledExceptionHandler(null, null);
+					if (retVal != CHECK_INTERVAL)
+					{
+						Log.DebugFormat("Received signal {0}, exiting", signals[retVal].Signum);
+						break;
+					}
+				}
+			}
+			TerminateAllGenerators();
 		}
 
-		private static void UnableToLoadPosix(Exception ex)
+		private static void UnableToLoadPosix(Exception exception)
 		{
-			Console.Error.WriteLine("Unable to catch POSIX signals.");
-			TypeLoadException tlex = ex as TypeLoadException;
-			if (tlex != null)
-			{
-				Console.Error.WriteLine(" Type could not be loaded: {0}", tlex.TypeName);
-			}
-			FileNotFoundException fnfex = ex as FileNotFoundException;
-			if (fnfex != null)
-			{
-				Console.Error.WriteLine(" Assembly could not be loaded: {0}", fnfex.FileName);
-			}
-			Console.Error.WriteLine(" Error message = '{0}'", ex.Message);
+			Log.Warn("Unable to catch POSIX signals.", exception);
 
-			Thread.Sleep(int.MaxValue);
+			while (AreGeneratorsRunning())
+			{
+				Thread.Sleep(100);
+			}
+		}
+
+		private static bool AreGeneratorsRunning()
+		{
+			foreach (OnionGenerator o in generators)
+			{
+				if (o != null && o.Running)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private static void TerminateAllGenerators()
+		{
+			if (generators != null)
+			{
+				foreach (OnionGenerator o in generators)
+				{
+					if (o != null)
+					{
+						o.Stop();
+					}
+				}
+	
+				while (AreGeneratorsRunning())
+				{
+					Thread.Sleep(0);
+				}
+			}
 		}
 
 		private static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
 		{
-			receivedShutdownSignal = true;
+			Log.Fatal("Unhandled Exception", e.ExceptionObject as Exception);
 
-			foreach (OnionGenerator o in generators)
-			{
-				o.Stop();
-			}
-
-			bool ready = false;
-			while (!ready)
-			{
-				ready = true;
-				foreach (OnionGenerator o in generators)
-				{
-					if (o.Running)
-					{
-						ready = false;
-					}
-				}
-
-				Thread.Sleep(0);
-			}
-
-			Console.WriteLine();
-			Console.WriteLine("Closed cleanly");
-		}
-
-		private static void ProcessGeneratedOnion(object sender, OnionGenerator.OnionGeneratedEventArgs e)
-		{
-			if (receivedShutdownSignal)
-			{
-				e.Cancel = true;
-			}
-
-			using (OnionAddress onion = e.Result)
-			{
-				if (log != null)
-				{
-					log.WriteLine(string.Format("{0}{1}{2}", onion.Onion, LOG_FIELD_SEPARATOR, onion.ToXmlString(true)));
-					log.Flush();
-				}
-
-				Console.Write(onion.Onion + " " + ++count + "\r");
-			}
+			TerminateAllGenerators();
 		}
 	}
 }

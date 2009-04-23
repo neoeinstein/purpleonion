@@ -30,12 +30,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Mono.Security" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=200a2bd1219e83a8" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="OnionAddress.cs" />
     <Compile Include="Utilities\Base32Convert.cs" />
     <Compile Include="Utilities\RSAOperations.cs" />
+    <Compile Include="OnionDirectory.cs" />
+    <Compile Include="PorException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utilities\" />

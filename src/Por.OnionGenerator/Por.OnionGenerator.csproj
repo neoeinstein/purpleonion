@@ -29,6 +29,7 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Security" />
     <Reference Include="System" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=200a2bd1219e83a8" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="OnionLogProcessor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -43,5 +45,10 @@
       <Project>{451F8693-98B3-414D-A8F5-F238D0686788}</Project>
       <Name>Por.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

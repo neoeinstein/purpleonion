@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Mono.Options;
+using log4net;
 
 namespace Por.OnionGenerator
 {
 	sealed class Settings
 	{
+		private static readonly ILog Log 
+			= LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		public readonly string AppName = AppDomain.CurrentDomain.FriendlyName;
 		public Regex ToMatch { get; set; }
 		public string OutFilename { get; set; }
@@ -47,6 +51,7 @@ namespace Por.OnionGenerator
 		
 		public bool TryParse(string[] args)
 		{
+			Log.Debug("Processing command line arguments");
 			try
 			{
 				ExtraArgs = options.Parse(args);
@@ -61,6 +66,7 @@ namespace Por.OnionGenerator
 
 		public void ShowOptionsError(string message)
 		{
+			Log.InfoFormat("Problem processing options: {0}", message);
 			Console.Error.Write(AppName + ": ");
 			Console.Error.WriteLine(message);
 			Console.Error.WriteLine("Try `" + AppName + " --help' for more information.");
@@ -68,7 +74,7 @@ namespace Por.OnionGenerator
 		
 		public void ShowHelp(TextWriter o)
 		{
-			o.WriteLine("Usage: " + AppName + " [-v] [-b] [[[-i|-o] filename] [-m regex] [-w number]|-c dir]");
+			o.WriteLine("Usage: " + AppName + " [-b dir] [[[-i|-o] filename] [-m regex] [-w number]|-c dir]");
 			o.WriteLine("Brute-forces the creation of many RSA key-pairs attempting to find one whose");
 			o.WriteLine("Tor onion address matches a given pattern. For the creation of vanity");
 			o.WriteLine("onion addresses or burning through excess entropy.");
