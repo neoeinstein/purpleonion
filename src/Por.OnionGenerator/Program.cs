@@ -7,6 +7,8 @@ using Mono.Security.Cryptography;
 using Mono.Unix;
 using Mono.Unix.Native;
 using log4net;
+using log4net.Appender;
+using log4net.Layout;
 
 // TODO: This dependency should be refactored out to another class
 using Por.Core;
@@ -115,7 +117,9 @@ namespace Por.OnionGenerator
 			OnionGenerator[] generators = null;
 			try
 			{
-				generators = PrepareGenerators(settings);
+				IAppender appender = GetOnionLoggingAppender(settings);
+				
+				generators = PrepareGenerators(settings, appender);
 
 				foreach (OnionGenerator g in generators)
 				{
@@ -163,16 +167,35 @@ namespace Por.OnionGenerator
 			return 0;
 		}
 
-		private static OnionGenerator[] PrepareGenerators(Settings settings)
+		private static IAppender GetOnionLoggingAppender(Settings settings)
+		{
+			if(string.IsNullOrEmpty(settings.OutFilename))
+			{
+				return null;
+			}
+			
+			FileAppender appender = new FileAppender {
+				Layout = new PatternLayout("%m%n"),
+				Encoding = System.Text.Encoding.ASCII,
+				AppendToFile = true,
+				File = settings.OutFilename,
+				Name = "OnionLog",
+			};
+			appender.ActivateOptions();
+
+			return appender;
+		}
+
+		private static OnionGenerator[] PrepareGenerators(Settings settings, IAppender appender)
 		{		
 			OnionGenerator[] generators = new OnionGenerator[settings.WorkerCount];
 			for (int i = 0; i < generators.Length; ++i)
 			{
 				generators[i] = new OnionGenerator {
-					OnionOutputFile = settings.OutFilename,
 					OnionPattern = settings.ToMatch,
 					PickDirectory = PickOutputDirectory,
 				};
+				generators[i].OnionAppender.AddAppender(appender);
 			}
 			return generators;
 		}
@@ -190,7 +213,7 @@ namespace Por.OnionGenerator
 
 					if (retVal != CHECK_INTERVAL)
 					{
-						Log.DebugFormat("Received signal {0}, exiting", signals[retVal].Signum);
+						Log.InfoFormat("Received signal {0}, exiting", signals[retVal].Signum);
 						break;
 					}
 				}

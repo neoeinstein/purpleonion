@@ -17,7 +17,14 @@ namespace Por.OnionGenerator
 
 		private readonly ILoggerRepository OnionRepository;
 		private readonly ILog OnionLog;
-		private readonly ForwardingAppender OnionAppender;
+		private readonly ForwardingAppender onionAppender = new ForwardingAppender();
+		public ForwardingAppender OnionAppender
+		{
+			get
+			{
+				return onionAppender;
+			}
+		}
 
 		private readonly BackgroundWorker worker = new BackgroundWorker();
 		public Regex OnionPattern { get; set; }
@@ -35,35 +42,6 @@ namespace Por.OnionGenerator
 			GeneratedCount = 0;
 			MatchedCount = 0;
 		}
-
-		public string OnionOutputFile
-		{
-			get
-			{
-				FileAppender appender = OnionAppender.GetAppender("OnionLog") as FileAppender;
-				if (appender == null)
-				{
-					return null;
-				}
-				return appender.File;
-			}
-			set
-			{
-				OnionAppender.RemoveAllAppenders();
-				if(!string.IsNullOrEmpty(value))
-				{
-					FileAppender appender = new FileAppender {
-						Layout = new PatternLayout("%m%n"),
-						Encoding = System.Text.Encoding.ASCII,
-						AppendToFile = true,
-						File = value,
-						Name = "OnionLog",
-					};
-					appender.ActivateOptions();
-					OnionAppender.AddAppender(appender);
-				}
-			}
-		}
 		
 		public OnionGenerator()
 		{
@@ -71,7 +49,6 @@ namespace Por.OnionGenerator
 			Guid guid = Guid.NewGuid();
 			OnionRepository = LogManager.CreateRepository(name + guid.ToString());
 			OnionLog = LogManager.GetLogger(OnionRepository.Name, name);
-			OnionAppender = new ForwardingAppender();
 			BasicConfigurator.Configure(OnionRepository, OnionAppender);
 
 			worker.DoWork += GenerateOnionsLoop;
@@ -121,7 +98,7 @@ namespace Por.OnionGenerator
 					++GeneratedCount;
 				}
 			}
-			Log.Debug("Stopped onion address generation");
+			Log.Info("Stopped onion address generation");
 		}
 
 		public delegate string DirectoryPicker(OnionAddress onion);
