@@ -1,2 +1,4 @@
 *~
+*.userprefs
+*.pidb
 build/
