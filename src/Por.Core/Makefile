@@ -11,13 +11,13 @@ include $(top_srcdir)/config.make
 ifeq ($(CONFIG),DEBUG)
 ASSEMBLY_COMPILER_COMMAND = gmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG"
-ASSEMBLY = bin/Debug/Por.Core.dll
+ASSEMBLY = ../../build/Debug/Por.Core.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = library
 PROJECT_REFERENCES = 
-BUILD_DIR = bin/Debug
+BUILD_DIR = ../../build/Debug
 
-POR_CORE_DLL_MDB_SOURCE=bin/Debug/Por.Core.dll.mdb
+POR_CORE_DLL_MDB_SOURCE=../../build/Debug/Por.Core.dll.mdb
 POR_CORE_DLL_MDB=$(BUILD_DIR)/Por.Core.dll.mdb
 
 endif

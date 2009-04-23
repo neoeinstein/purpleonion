@@ -15,11 +15,13 @@ ASSEMBLY = ../../build/Debug/Por.OnionGenerator.exe
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
 COMPILE_TARGET = exe
 PROJECT_REFERENCES =  \
-	../Por.Core/bin/Debug/Por.Core.dll
+	../../build/Debug/Por.Core.dll
 BUILD_DIR = ../../build/Debug
 
 POR_ONIONGENERATOR_EXE_CONFIG_SOURCE=app.config
-POR_CORE_DLL_SOURCE=../Por.Core/bin/Debug/Por.Core.dll
+POR_CORE_DLL_SOURCE=../../build/Debug/Por.Core.dll
+POR_CORE_DLL_MDB_SOURCE=../../build/Debug/Por.Core.dll.mdb
+POR_CORE_DLL_MDB=$(BUILD_DIR)/Por.Core.dll.mdb
 POR_ONIONGENERATOR_EXE_MDB_SOURCE=../../build/Debug/Por.OnionGenerator.exe.mdb
 POR_ONIONGENERATOR_EXE_MDB=$(BUILD_DIR)/Por.OnionGenerator.exe.mdb
 
@@ -37,6 +39,7 @@ BUILD_DIR = ../../build/Release
 
 POR_ONIONGENERATOR_EXE_CONFIG_SOURCE=app.config
 POR_CORE_DLL_SOURCE=../../build/Release/Por.Core.dll
+POR_CORE_DLL_MDB=
 POR_ONIONGENERATOR_EXE_MDB=
 
 endif
@@ -47,6 +50,7 @@ SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 PROGRAMFILES = \
 	$(POR_ONIONGENERATOR_EXE_CONFIG) \
 	$(POR_CORE_DLL) \
+	$(POR_CORE_DLL_MDB) \
 	$(POR_ONIONGENERATOR_EXE_MDB)  
 
 BINARIES = \
@@ -118,6 +122,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(POR_ONIONGENERATOR_EXE_CONFIG),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(POR_CORE_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(POR_CORE_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(POR_ONIONGENERATOR_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	mkdir -p '$(DESTDIR)$(bindir)'
 	$(call cp,$(POR_ONIONGENERATOR),$(DESTDIR)$(bindir))
@@ -130,6 +135,7 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_ONIONGENERATOR_EXE_CONFIG),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_CORE_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(POR_CORE_DLL_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_ONIONGENERATOR_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_ONIONGENERATOR),$(DESTDIR)$(bindir))
 	make post-uninstall-local-hook prefix=$(prefix)
