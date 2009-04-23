@@ -2,7 +2,7 @@
 VERSION=0.1
 PACKAGE=purpleonion
 prefix=/usr/local
-config=RELEASE
+config=DEBUG
 configurations=" DEBUG RELEASE"
 common_packages=""
 
