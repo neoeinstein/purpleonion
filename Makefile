@@ -8,6 +8,8 @@ include $(top_srcdir)/config.make
 include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/rules.make
 
+include $(top_srcdir)/gendarme.make
+
 #include $(top_srcdir)/custom-hooks.make
 
 #Warning: This is an automatically generated file, do not edit!

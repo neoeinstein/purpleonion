@@ -1,7 +1,7 @@
 # These may change in the future. Using static readonly values enables the
 # value to change without requiring recompilation of library clients.
 R: Gendarme.Rules.Performance.PreferLiteralOverInitOnlyFieldsRule
-T: Por.OnionGenerator.OnionAddress
+T: Por.Core.OnionAddress
 
 # non-PurpleOnion code / Mono.Options
 
@@ -29,4 +29,13 @@ R: Gendarme.Rules.Smells.AvoidCodeDuplicatedInSameClassRule
 T: Mono.Options.OptionSet
 R: Gendarme.Rules.Smells.AvoidLongMethodsRule
 M: System.Boolean Mono.Options.OptionSet::WriteOptionPrototype(System.IO.TextWriter,Mono.Options.Option,System.Int32&)
-
+R: Gendarme.Rules.Design.AvoidRefAndOutParametersRule
+M: System.Boolean Mono.Options.OptionSet::GetOptionParts(System.String,System.String&,System.String&,System.String&,System.String&)
+R: Gendarme.Rules.Smells.AvoidSwitchStatementsRule
+M: System.Void Mono.Options.Option::AddSeparators(System.String,System.Int32,System.Collections.Generic.ICollection`1<System.String>)
+M: System.Boolean Mono.Options.OptionSet::Parse(System.String,Mono.Options.OptionContext)
+M: System.Boolean Mono.Options.OptionSet::ParseBundledValue(System.String,System.String,Mono.Options.OptionContext)
+M: System.String Mono.Options.OptionSet::GetDescription(System.String)
+M: System.Int32 Mono.Options.OptionSet::GetLineEnd(System.Int32,System.Int32,System.String)
+R: Gendarme.Rules.Serialization.MarkEnumerationsAsSerializableRule
+T: Mono.Options.OptionValueType
