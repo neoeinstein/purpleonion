@@ -53,9 +53,9 @@ namespace Por.OnionGenerator
 			return pki;
 		}
 
-		public static void ToOpenSslFile(this RSA rsa, string filename)
+		public static void ToOpenSslFile(RSA rsa, string filename)
 		{
-			string keyString = rsa.ToOpenSslString();
+			string keyString = RSAExtensions.ToOpenSslString(rsa);
 			StringBuilder sb = new StringBuilder();
 
 			sb.AppendLine(BEGIN_RSA_PRIVATE_KEY);
@@ -78,13 +78,13 @@ namespace Por.OnionGenerator
 			File.WriteAllText(filename, sb.ToString());
 		}
 
-		public static string ToOpenSslString(this RSA rsa)
+		public static string ToOpenSslString(RSA rsa)
 		{
 			byte[] keyBytes = PKCS8.PrivateKeyInfo.Encode(rsa);
 			return Convert.ToBase64String(keyBytes);
 		}
 
-		public static ASN1 ToAsn1(this RSA rsa)
+		public static ASN1 ToAsn1(RSA rsa)
 		{
 			ASN1 asn = new ASN1(0x30);
 			ASN1 asnOid = new ASN1(0x30);
@@ -107,7 +107,7 @@ namespace Por.OnionGenerator
 			return asn;
 		}
 
-		public static ASN1 ToAsn1Key(this RSA rsa)
+		public static ASN1 ToAsn1Key(RSA rsa)
 		{
 			RSAParameters parameters = rsa.ExportParameters(false);
 			

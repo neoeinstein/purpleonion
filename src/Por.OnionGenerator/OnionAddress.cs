@@ -22,7 +22,7 @@ namespace Por.OnionGenerator
 			{
 				if (onion == null)
 				{
-					ASN1 asn = key.ToAsn1Key();
+					ASN1 asn = RSAExtensions.ToAsn1Key(key);
 					byte[] hash;
 					using (SHA1 hasher = SHA1.Create())
 					{
@@ -75,7 +75,7 @@ namespace Por.OnionGenerator
 		
 		public string ToOpenSslString()
 		{
-			return key.ToOpenSslString();
+			return RSAExtensions.ToOpenSslString(key);
 		}
 
 		public static OnionAddress ReadFromOnionFile(string file)
@@ -90,7 +90,7 @@ namespace Por.OnionGenerator
 			{
 				throw new NotSupportedException("Cannot create an onion from a public-only key");
 			}
-			key.ToOpenSslFile(Path.Combine(dir, KeyFilename));
+			RSAExtensions.ToOpenSslFile(key, Path.Combine(dir, KeyFilename));
 			File.WriteAllText(Path.Combine(dir, HostFilename), Onion + Extension + "\n");
 		}
 

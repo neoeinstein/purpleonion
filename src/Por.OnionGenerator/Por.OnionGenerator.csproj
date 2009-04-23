@@ -28,7 +28,6 @@
   <ItemGroup>
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Security" />
-    <Reference Include="System.Core" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

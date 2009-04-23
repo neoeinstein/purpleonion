@@ -19,6 +19,9 @@ namespace Por.OnionGenerator
 		private const byte INVALID_CHAR = 255;
 		private static readonly byte PADDING_CHAR = boundaries[0];
 
+		private delegate void Chomper();
+		private delegate ToT Converter<FromT,ToT>(FromT arg);
+
 		public static string ToString(byte[] plain)
 		{
 			short buffer = 0;
@@ -27,7 +30,7 @@ namespace Por.OnionGenerator
 			StringBuilder sb = new StringBuilder();
 			byte index = 0;
 			
-			Action chomp = () => {
+			Chomper chomp = () => {
 				index = (byte) (buffer >> (hi - 5));
 				sb.Append(base32chars[index]);
 				buffer = (short) (buffer ^ index << (hi - 5));
@@ -76,7 +79,7 @@ namespace Por.OnionGenerator
 			int currentChar = 0;
 			byte[] encBuf = ASCIIEncoding.Default.GetBytes(enc);
 			
-			Func<byte,byte> normalize = (byte b) => {
+			Converter<byte,byte> normalize = (byte b) => {
 				if (b == boundaries[PADDING_BOUND])
 					return PADDING_CHAR;
 				
