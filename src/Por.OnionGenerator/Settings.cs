@@ -42,7 +42,7 @@ namespace Por.OnionGenerator
 					v => ShouldShowHelp = v != null }
 			};
 			BaseDir = ".";
-			WorkerCount = Environment.ProcessorCount * 2;
+			WorkerCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount * 2 : 1;
 		}
 		
 		public bool TryParse(string[] args)
@@ -53,12 +53,17 @@ namespace Por.OnionGenerator
 			}
 			catch (OptionException e)
 			{
-				Console.Error.Write(AppName + ": ");
-				Console.Error.WriteLine(e.Message);
-				Console.Error.WriteLine("Try `" + AppName + " --help' for more information.");
+				ShowOptionsError(e.Message);
 				return false;
 			}
 			return true;
+		}
+
+		public void ShowOptionsError(string message)
+		{
+			Console.Error.Write(AppName + ": ");
+			Console.Error.WriteLine(message);
+			Console.Error.WriteLine("Try `" + AppName + " --help' for more information.");
 		}
 		
 		public void ShowHelp(TextWriter o)
