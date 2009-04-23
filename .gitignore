@@ -1,4 +1,10 @@
 *~
 *.userprefs
 *.pidb
+
+config.log
+config.make
+
 build/
+
+src/Por.OnionGenerator/por.oniongenerator
