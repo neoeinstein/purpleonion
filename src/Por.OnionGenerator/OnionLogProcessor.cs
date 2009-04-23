@@ -7,7 +7,7 @@ using log4net;
 
 namespace Por.OnionGenerator
 {
-	public class OnionLogProcessor
+	sealed class OnionLogProcessor
 	{
 		private static readonly ILog Log 
 			= LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

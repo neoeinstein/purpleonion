@@ -11,9 +11,13 @@ namespace Por.Core
 
 		public static void WriteDirectory(OnionAddress onion, string dir)
 		{
+			if (onion == null)
+			{
+				throw new ArgumentNullException("onion");
+			}
 			if (string.IsNullOrEmpty(dir))
 			{
-				throw new ArgumentException("An empty argument is not valid", "dir");
+				throw new ArgumentNullException("dir");
 			}
 
 			Log.Debug("Attempting to write onion directory");

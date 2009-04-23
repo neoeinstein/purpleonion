@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Por.Core
 {
+	[Serializable]
 	public class PorException : Exception, ISerializable
 	{
 		public PorException() : base() { }

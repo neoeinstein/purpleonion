@@ -10,7 +10,7 @@ using log4net.Repository;
 
 namespace Por.OnionGenerator
 {
-	sealed class OnionGenerator
+	sealed class OnionGenerator : IDisposable
 	{
 		private static readonly ILog Log 
 			= LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -38,6 +38,15 @@ namespace Por.OnionGenerator
 
 		public string OnionOutputFile
 		{
+			get
+			{
+				FileAppender appender = OnionAppender.GetAppender("OnionLog") as FileAppender;
+				if (appender == null)
+				{
+					return null;
+				}
+				return appender.File;
+			}
 			set
 			{
 				OnionAppender.RemoveAllAppenders();
@@ -48,6 +57,7 @@ namespace Por.OnionGenerator
 						Encoding = System.Text.Encoding.ASCII,
 						AppendToFile = true,
 						File = value,
+						Name = "OnionLog",
 					};
 					appender.ActivateOptions();
 					OnionAppender.AddAppender(appender);
@@ -81,7 +91,7 @@ namespace Por.OnionGenerator
 			StopRequested = true;
 		}
 
-		private void GenerateOnionsLoop(object sender, DoWorkEventArgs e)
+		private void GenerateOnionsLoop(object sender, EventArgs e)
 		{
 			Log.Info("Beginning onion address generation");
 			while (!StopRequested && GeneratedCount <= GenerateMax && MatchedCount <= MatchMax)
@@ -112,11 +122,6 @@ namespace Por.OnionGenerator
 				}
 			}
 			Log.Debug("Stopped onion address generation");
-
-			if (StopRequested)
-			{
-				e.Cancel = true;
-			}
 		}
 
 		public delegate string DirectoryPicker(OnionAddress onion);
@@ -126,6 +131,30 @@ namespace Por.OnionGenerator
 		{
 			Running = false;
 			StopRequested = false;
+		}
+
+		bool disposed;
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		private void Dispose(bool disposing)
+		{
+			if (disposed)
+			{
+				return;
+			}
+			if (disposing)
+			{
+				if (worker != null)
+				{
+					((IDisposable)worker).Dispose();
+				}
+			}
+			disposed = true;
 		}
 	}
 }

@@ -15,6 +15,8 @@ namespace Por.Core.Utilities
 
 		public static RSA FromOpenSslFile(string file)
 		{
+			EnsureNotNull(file, "file");
+
 			StringBuilder sb = new StringBuilder();
 			bool begin = false;
 			
@@ -44,6 +46,8 @@ namespace Por.Core.Utilities
 
 		public static RSA FromOpenSslString(string key)
 		{
+			EnsureNotNull(key, "key");
+			
 			byte[] keyBytes = Convert.FromBase64String(key);
 			if (PKCS8.GetType(keyBytes) != PKCS8.KeyInfo.PrivateKey)
 			{
@@ -55,6 +59,9 @@ namespace Por.Core.Utilities
 
 		public static void ToOpenSslFile(RSA rsa, string filename)
 		{
+			EnsureNotNull(rsa, "rsa");
+			EnsureNotNull(filename, "filename");
+			
 			string keyString = ToOpenSslString(rsa);
 			StringBuilder sb = new StringBuilder();
 
@@ -80,12 +87,16 @@ namespace Por.Core.Utilities
 
 		public static string ToOpenSslString(RSA rsa)
 		{
+			EnsureNotNull(rsa, "rsa");
+			
 			byte[] keyBytes = PKCS8.PrivateKeyInfo.Encode(rsa);
 			return Convert.ToBase64String(keyBytes);
 		}
 
 		public static ASN1 ToAsn1(RSA rsa)
 		{
+			EnsureNotNull(rsa, "rsa");
+			
 			ASN1 asn = new ASN1(0x30);
 			ASN1 asnOid = new ASN1(0x30);
 			
@@ -109,6 +120,8 @@ namespace Por.Core.Utilities
 
 		public static ASN1 ToAsn1Key(RSA rsa)
 		{
+			EnsureNotNull(rsa, "rsa");
+
 			RSAParameters parameters = rsa.ExportParameters(false);
 			
 			ASN1 asnKey = new ASN1(0x30);
@@ -116,6 +129,13 @@ namespace Por.Core.Utilities
 			asnKey.Add(ASN1Convert.FromUnsignedBigInteger(parameters.Exponent));
 			return asnKey;
 		}
-	
+
+		private static void EnsureNotNull(object obj, string argName)
+		{
+			if (obj == null)
+			{
+				throw new ArgumentNullException(argName);
+			}
+		}			
 	}
 }

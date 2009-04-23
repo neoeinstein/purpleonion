@@ -1,3 +1,7 @@
+# This is disposed of properly even though Gendarme is loathe to admit it
+R: Gendarme.Rules.Correctness.EnsureLocalDisposalRule
+M: System.Int32 Por.OnionGenerator.Program::GenerateOnions(Por.OnionGenerator.Settings)
+
 # These may change in the future. Using static readonly values enables the
 # value to change without requiring recompilation of library clients.
 R: Gendarme.Rules.Performance.PreferLiteralOverInitOnlyFieldsRule

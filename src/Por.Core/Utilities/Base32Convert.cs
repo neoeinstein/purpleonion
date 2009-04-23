@@ -20,10 +20,15 @@ namespace Por.Core.Utilities
 		private static readonly byte PADDING_CHAR = boundaries[0];
 
 		private delegate void Chomper();
-		private delegate ToT Converter<FromT,ToT>(FromT arg);
+		private delegate R Converter<A,R>(A arg);
 
 		public static string ToString(byte[] plain)
 		{
+			if (plain == null)
+			{
+				throw new ArgumentNullException("plain");
+			}
+			
 			short buffer = 0;
 			int hi = 0;
 			int currentByte = 0;
@@ -74,6 +79,11 @@ namespace Por.Core.Utilities
 		
 		public static byte[] ToBytes(string enc)
 		{
+			if (enc == null)
+			{
+				throw new ArgumentNullException("enc");
+			}
+			
 			short buffer = 0;
 			int hi = 0;
 			int currentChar = 0;
