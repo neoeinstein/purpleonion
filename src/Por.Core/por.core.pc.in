@@ -1,0 +1,6 @@
+Name: Por.Core
+Description: Por.Core
+Version: 0.1
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/Por.Core.dll

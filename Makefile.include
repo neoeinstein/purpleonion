@@ -67,6 +67,8 @@ bin_SCRIPTS = $(BINARIES)
 
 programfilesdir = @libdir@/@PACKAGE@
 programfiles_DATA = $(PROGRAMFILES)
+linuxpkgconfigdir = @libdir@/pkgconfig
+linuxpkgconfig_DATA = $(LINUX_PKGCONFIG)
 
 
 # macros

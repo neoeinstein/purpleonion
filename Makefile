@@ -12,10 +12,10 @@ include $(top_srcdir)/rules.make
 
 #Warning: This is an automatically generated file, do not edit!
 ifeq ($(CONFIG),DEBUG)
- SUBDIRS =  src/Por.OnionGenerator
+ SUBDIRS =  src/Por.Core src/Por.OnionGenerator
 endif
 ifeq ($(CONFIG),RELEASE)
- SUBDIRS =  src/Por.OnionGenerator
+ SUBDIRS =  src/Por.Core src/Por.OnionGenerator
 endif
 
 
