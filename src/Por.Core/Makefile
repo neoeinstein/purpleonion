@@ -53,18 +53,22 @@ FILES = \
 	AssemblyInfo.cs \
 	OnionAddress.cs \
 	Utilities/Base32Convert.cs \
-	Utilities/RSAOperations.cs 
+	Utilities/RSAOperations.cs \
+	OnionDirectory.cs \
+	PorException.cs 
 
 DATA_FILES = 
 
 RESOURCES = 
 
 EXTRAS = \
+	Utilities \
 	por.core.pc.in 
 
 REFERENCES =  \
 	System \
-	Mono.Security
+	Mono.Security \
+	-pkg:log4net
 
 DLL_REFERENCES = 
 

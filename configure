@@ -4,7 +4,7 @@ PACKAGE=purpleonion
 prefix=/usr/local
 config=DEBUG
 configurations=" DEBUG RELEASE"
-common_packages=""
+common_packages=" log4net;1.2.9"
 
 
 usage ()

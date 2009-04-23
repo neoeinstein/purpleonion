@@ -18,6 +18,7 @@ PROJECT_REFERENCES =  \
 	../Por.Core/bin/Debug/Por.Core.dll
 BUILD_DIR = ../../build/Debug
 
+POR_ONIONGENERATOR_EXE_CONFIG_SOURCE=app.config
 POR_CORE_DLL_SOURCE=../Por.Core/bin/Debug/Por.Core.dll
 POR_ONIONGENERATOR_EXE_MDB_SOURCE=../../build/Debug/Por.OnionGenerator.exe.mdb
 POR_ONIONGENERATOR_EXE_MDB=$(BUILD_DIR)/Por.OnionGenerator.exe.mdb
@@ -34,6 +35,7 @@ PROJECT_REFERENCES =  \
 	../../build/Release/Por.Core.dll
 BUILD_DIR = ../../build/Release
 
+POR_ONIONGENERATOR_EXE_CONFIG_SOURCE=app.config
 POR_CORE_DLL_SOURCE=../../build/Release/Por.Core.dll
 POR_ONIONGENERATOR_EXE_MDB=
 
@@ -43,6 +45,7 @@ AL=al2
 SATELLITE_ASSEMBLY_NAME=$(notdir $(basename $(ASSEMBLY))).resources.dll
 
 PROGRAMFILES = \
+	$(POR_ONIONGENERATOR_EXE_CONFIG) \
 	$(POR_CORE_DLL) \
 	$(POR_ONIONGENERATOR_EXE_MDB)  
 
@@ -52,6 +55,7 @@ BINARIES = \
 
 RESGEN=resgen2
 
+POR_ONIONGENERATOR_EXE_CONFIG = $(BUILD_DIR)/Por.OnionGenerator.exe.config
 POR_CORE_DLL = $(BUILD_DIR)/Por.Core.dll
 POR_ONIONGENERATOR = $(BUILD_DIR)/por.oniongenerator
 
@@ -60,19 +64,22 @@ FILES = \
 	OnionGenerator.cs \
 	Program.cs \
 	Settings.cs \
-	Options.cs 
+	Options.cs \
+	OnionLogProcessor.cs 
 
 DATA_FILES = 
 
 RESOURCES = 
 
 EXTRAS = \
+	app.config \
 	por.oniongenerator.in 
 
 REFERENCES =  \
 	Mono.Posix \
 	Mono.Security \
-	System
+	System \
+	-pkg:log4net
 
 DLL_REFERENCES = 
 
@@ -86,6 +93,7 @@ include $(top_srcdir)/Makefile.include
 
 
 
+$(eval $(call emit-deploy-target,POR_ONIONGENERATOR_EXE_CONFIG))
 $(eval $(call emit-deploy-wrapper,POR_ONIONGENERATOR,por.oniongenerator,x))
 
 
@@ -108,6 +116,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	mkdir -p '$(DESTDIR)$(libdir)/$(PACKAGE)'
 	$(call cp,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call cp,$(POR_ONIONGENERATOR_EXE_CONFIG),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(POR_CORE_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call cp,$(POR_ONIONGENERATOR_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	mkdir -p '$(DESTDIR)$(bindir)'
@@ -119,6 +128,7 @@ uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB)
 	make uninstall-satellite-assemblies prefix=$(prefix)
 	$(call rm,$(ASSEMBLY),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(ASSEMBLY_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
+	$(call rm,$(POR_ONIONGENERATOR_EXE_CONFIG),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_CORE_DLL),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_ONIONGENERATOR_EXE_MDB),$(DESTDIR)$(libdir)/$(PACKAGE))
 	$(call rm,$(POR_ONIONGENERATOR),$(DESTDIR)$(bindir))
