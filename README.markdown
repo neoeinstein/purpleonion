@@ -29,6 +29,16 @@ this signal cannot be caught or handled.
 
 Applications
 ------------
+Applications can be run using the Mono framework by calling the executable
+prefixed with `mono` as in:
+
+	mono Por.Application.exe [arguments]
+
+When running on a Windows machine using the .NET framework, the executable can
+be called directly without prefixing the runtime:
+
+	Por.Application.exe [arguments]
+
 ### Por.OnionGenerator
 Currently the only fully implemented module in the PurpleOnion package, the
 OnionGenerator is a program that facilitates the brute-force generation of
@@ -39,13 +49,28 @@ Development
 ### Compilation
 PurpleOnion requires at least Mono 2.0 to compile and run. The
 compiled binary will run on the .NET 2.0 framework with the appropriate
-libraries available, but POSIX is not supported on Windows machines.
+libraries available (including `Mono.Security`).
 
-### Namespaces
+The main development takes place in [MonoDevelop][] with `PurpleOnion.sln` as
+the root solution. All projects can be compiled within MonoDevelop, or by
+running `mdtool`:
+
+	mdtool build PurpleOnion.sln
+
+Makefiles are also generally kept up to date as well. In order to compile from
+the make files, use the standard:
+
+	./configure && make
+
+### Standards
+Unless otherwise noted, PurpleOnion chooses to follow the design guidelines set
+forth in [_Framework Design Guidelines, Second Edition_] [fdg2e] by Cwalina and
+Abrams.
+
+#### Namespaces
 PurpleOnion consumes the `Por` namespace which is an acronym for "Purple Onion
 Router". Only the initial letter is capitalized in keeping with
-initialism-namespace standards set forth in [_Framework Design Guidelines,
-Second Edition_] [fdg2e] by Cwalina and Abrams.
+initialism-namespace standards.
 
 Attribution
 -----------
@@ -82,4 +107,4 @@ the MIT/X11 license:
 [tor]: http://www.torproject.org/
 [fdg2e]: http://www.pearsonhighered.com/educator/academic/product/0,3110,0321545613,00.html
 [mono-gad]: http://mono-project.com/Guidelines:Application_Deployment
-
+[monodevelop]: http://www.monodevelop.org/
