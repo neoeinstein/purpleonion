@@ -135,12 +135,12 @@ namespace Por.OnionGenerator
 				}
 				catch (FileNotFoundException ex)
 				{
-					Log.Warn("Unable to catch POSIX signals.", ex);
+					LogNoPosixMessage(ex);
 					noPosix = true;
 				}
 				catch (TypeLoadException ex)
 				{
-					Log.Warn("Unable to catch POSIX signals.", ex);
+					LogNoPosixMessage(ex);
 					noPosix = true;
 				}
 
@@ -167,6 +167,20 @@ namespace Por.OnionGenerator
 			}
 
 			return 0;
+		}
+
+		private static void LogNoPosixMessage(Exception ex)
+		{
+			string message = "Unable to catch POSIX signals";
+			if (System.Environment.OSVersion.Platform == PlatformID.Unix
+			    || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
+			{
+				Log.Warn(message, ex);
+			}
+			else
+			{
+				Log.Debug(message + " (expected)");
+			}
 		}
 
 		private static IAppender GetOnionLoggingAppender(Settings settings)
