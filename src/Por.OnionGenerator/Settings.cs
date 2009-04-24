@@ -52,7 +52,7 @@ namespace Por.OnionGenerator
 					v => ShouldShowHelp = v != null }
 			};
 			BaseDir = ".";
-			WorkerCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount * 2 : 1;
+			WorkerCount = Environment.ProcessorCount;
 			MaxGenerate = long.MaxValue;
 			MaxMatch = long.MaxValue;
 		}
