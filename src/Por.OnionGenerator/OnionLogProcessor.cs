@@ -31,12 +31,14 @@ namespace Por.OnionGenerator
 
 		public delegate string DirectoryPicker(OnionAddress onion);
 		public DirectoryPicker PickDirectory { get; set; }
+		public long MatchedCount { get; set; }
+		public long MatchMax { get; set; }
 
 		public void ProcessLog()
 		{
 			using (StreamReader file = File.OpenText(OnionLogFilename))
 			{
-				while (!file.EndOfStream)
+				while (!file.EndOfStream && MatchedCount < MatchMax)
 				{
 					string line = file.ReadLine().Trim();
 					if (string.IsNullOrEmpty(line) || line.StartsWith("#"))
@@ -74,6 +76,7 @@ namespace Por.OnionGenerator
 									{
 										OnionDirectory.WriteDirectory(onion, outputDir);
 									}
+									++MatchedCount;
 								}
 							}
 						}

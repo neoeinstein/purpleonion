@@ -14,6 +14,8 @@ namespace Por.OnionGenerator
 
 		public readonly string AppName = AppDomain.CurrentDomain.FriendlyName;
 		public Regex ToMatch { get; set; }
+		public long MaxGenerate { get; set; }
+		public long MaxMatch { get; set; }
 		public string OutFilename { get; set; }
 		public string InFilename { get; set; }
 		public string CheckDir { get; set; }
@@ -30,8 +32,12 @@ namespace Por.OnionGenerator
 			options = new OptionSet() {
 				{ "m|match=", "create hidden service directories for onion addresses found matching {REGEX}",
 					v => { if (v != null) ToMatch = new Regex(v, RegexOptions.Compiled); } },
+				{ "maxmatch=", "match at most {NUM} onion addresses and exit",
+					(long v) => MaxMatch = v },
 				{ "o|out=", "append generated keys to {FILE}\nexclusive of -i,-c",
 					v => { if (v != null) OutFilename = v; } },
+				{ "maxgen=", "generate at most {NUM} onion addresses and exit",
+					(long v) => MaxGenerate = v },
 				{ "i|in=", "find matching addresses from a previous run that was saved to {FILE}\nexclusive of -o,-c, requires -m",
 					v => { if (v != null) InFilename = v; } },
 				{ "c|check=", "verify that {DIR} is a valid onion directory whose hostname matches its private_key\nexclusive of -i,-o",
@@ -47,6 +53,8 @@ namespace Por.OnionGenerator
 			};
 			BaseDir = ".";
 			WorkerCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount * 2 : 1;
+			MaxGenerate = long.MaxValue;
+			MaxMatch = long.MaxValue;
 		}
 		
 		public bool TryParse(string[] args)

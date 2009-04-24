@@ -71,7 +71,7 @@ namespace Por.OnionGenerator
 		private void GenerateOnionsLoop(object sender, EventArgs e)
 		{
 			Log.Info("Beginning onion address generation");
-			while (!StopRequested && GeneratedCount <= GenerateMax && MatchedCount <= MatchMax)
+			while (!StopRequested && GeneratedCount < GenerateMax && MatchedCount < MatchMax)
 			{
 				Log.Debug("Generating onion");
 				using(OnionAddress onion = OnionAddress.Create())

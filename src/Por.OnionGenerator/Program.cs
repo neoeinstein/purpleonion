@@ -105,8 +105,10 @@ namespace Por.OnionGenerator
 			Log.DebugFormat("Looking for matches to: {0}", settings.ToMatch.ToString());
 			OnionLogProcessor processor
 				= new OnionLogProcessor(Path.Combine(settings.BaseDir, settings.InFilename),
-				                        settings.ToMatch);
-			processor.PickDirectory = PickOutputDirectory;
+				                        settings.ToMatch) {
+				PickDirectory = PickOutputDirectory,
+				MatchMax = settings.MaxMatch,
+			};
 			processor.ProcessLog();
 
 			return 0;
@@ -194,6 +196,8 @@ namespace Por.OnionGenerator
 				generators[i] = new OnionGenerator {
 					OnionPattern = settings.ToMatch,
 					PickDirectory = PickOutputDirectory,
+					GenerateMax = settings.MaxGenerate,
+					MatchMax = settings.MaxMatch,
 				};
 				generators[i].OnionAppender.AddAppender(appender);
 			}
